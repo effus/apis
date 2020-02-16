@@ -7,7 +7,7 @@ class Db {
     }
     connect() {
         return new Promise((resolve, reject) => {
-            MongoClient.connect(url, (err, database) => {
+            MongoClient.connect(this.url, (err, database) => {
                 if (err) {
                     reject();
                 }
