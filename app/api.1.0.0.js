@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * API for Date simulator
  */
@@ -21,7 +23,7 @@ class Api100 {
      * @param {*} res 
      */
     register(req, res) {
-        getCollection('users').then((collection) => {
+        /*getCollection('users').then((collection) => {
             res.send({
                 users: results 
             });
@@ -32,8 +34,9 @@ class Api100 {
             // .find().toArray((err, results) => {
                 
             // });
-        //})
-        
+        //})*/
+        console.log('register', this);
+        res.send({wtf:true});
     }
 
     error(res, exception) {
