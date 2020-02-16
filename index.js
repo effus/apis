@@ -8,7 +8,8 @@ const Api100 = require('./app/api.1.0.0');
 let app = express();
 
 app.use((req, res, next) => {
-  if (mongoose.connection.readyState) {
+  console.log('mongoose debg', mongoose);
+  if (mongoose.connection && mongoose.connection.readyState) {
     next();
   } else {
     require('./mongo').then(() => next());
