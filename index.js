@@ -14,7 +14,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 app.get('/', (req, res) => res.render('pages/index'))
 app.get('/meetapi', (req, res) => {
-    res.send({ version: '1.0.0', mongo: MongoConfig});
+    res.send({ version: '1.0.0', mongo: process.env[MongoConfig.use_env_variable]});
   })
 app.get('/meetapi/1.0.0/register', (new Api100()).register)
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
