@@ -21,7 +21,7 @@ class Api100 {
      * @param {*} res 
      */
     register(req, res) {
-        this.getCollection('users').then((collection) => {
+        getCollection('users').then((collection) => {
             res.send({
                 users: results 
             });
