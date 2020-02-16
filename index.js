@@ -8,6 +8,6 @@ express()
   .set('view engine', 'ejs')
   .get('/', (req, res) => res.render('pages/index'))
   .get('/meetapi', (req, res) => {
-    res.json({foo: 'bar'});
+    res.send({ hello: 'world' });
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
