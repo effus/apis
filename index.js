@@ -15,9 +15,8 @@ app.set('view engine', 'ejs')
 app.get('/', (req, res) => res.render('pages/index'))
 app.get('/apiinfo', (req, res) => {
   Db.connect().then(() => {
-    res.send({ version: '1.0.0', db: 'connected'});
-
+    res.send({ apis: ['1.0.0'], db: {connected: true}});
   });
 })
-app.get('/meetapi/1.0.0/register', (new Api100()).register)
+app.get('/meetapi/1.0.0/register', (new Api100(Db)).register)
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

@@ -1,8 +1,31 @@
+/**
+ * API for Date simulator
+ */
+
 class Api100 {
+    constructor(Db) {
+        this.Db = Db;
+    }
+
+    /**
+     * Register new user
+     * @param {*} req 
+     * @param {*} res 
+     */
     register(req, res) {
-        res.send({
-            register:'1.0.0'
-        });
+        this.res = res;
+        this.Db.connect().then((connect) => {
+            const users = connect.collection('users');
+            users.find().toArray((err, results) => {
+                res.send({
+                    users: results 
+                });
+            });
+        }).catch(this.error);
+    }
+
+    error(exception) {
+        this.res.send({error:true, message: exception.message});
     }
 };
 
