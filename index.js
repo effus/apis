@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
+const mongoose = require('./mongo');
 
 const Api100 = require('./app/api.1.0.0');
 
