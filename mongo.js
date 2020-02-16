@@ -1,8 +1,20 @@
-const mongoose = require('mongoose');
-const env = process.env.NODE_ENV;
-const config = require('./mongo.json')[env];
+const MongoClient    = require('mongodb').MongoClient;
+const MongoConfig = require('./mongo.json')['production'];
 
-module.exports = () => {
-    const envUrl = process.env[config.use_env_variable];
-    return mongoose.connect(envUrl);
-}
+class Db {
+    constructor() {
+        this.url = process.env[MongoConfig.use_env_variable];
+    }
+    connect() {
+        return new Promise((resolve, reject) => {
+            MongoClient.connect(url, (err, database) => {
+                if (err) {
+                    reject();
+                }
+                resolve(database);
+            });
+        });
+    }
+};
+
+module.exports = new Db();
