@@ -18,5 +18,5 @@ app.get('/apiinfo', (req, res) => {
     res.send({ apis: ['1.0.0'], db: {connected: true}});
   });
 })
-app.get('/meetapi/1.0.0/register', (new Api100(Db)).register)
+app.use('/meetapi/1.0.0', Api100);
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
