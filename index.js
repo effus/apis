@@ -12,5 +12,5 @@ express()
   .get('/meetapi', (req, res) => {
     res.send({ version: '1.0.0' });
   })
-  .post('/meetapi/1.0.0/register', (new Api100()).register)
+  .get('/meetapi/1.0.0/register', (new Api100()).register)
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
