@@ -6,4 +6,4 @@ class Api100 {
     }
 };
 
-modules.export = Api100;
+module.exports = Api100;
