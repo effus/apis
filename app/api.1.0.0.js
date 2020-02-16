@@ -1,5 +1,5 @@
 'use strict';
-
+const express = require('express');
 const router = express.Router();
 
 class Api100 {
