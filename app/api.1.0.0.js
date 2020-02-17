@@ -24,7 +24,8 @@ class Api100 {
     get(req, res) {
         getCollection('api_users')
             .then((collection) => {
-                collection.find({_id: ObjectID(req.param.id)}).toArray((err, user) => {
+                console.log('Find: ', req.param.id);
+                collection.find({_id: new ObjectID(req.param.id)}).toArray((err, user) => {
                     res.send({result: true, user: user});
                 });
             })

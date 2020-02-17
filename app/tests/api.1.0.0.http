@@ -1,5 +1,9 @@
 GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user
 
+### 
+
+GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user/5e4af0fbc633dd0004fe265c
+
 
 ###
 
