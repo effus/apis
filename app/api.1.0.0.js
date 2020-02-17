@@ -41,13 +41,10 @@ class Api100 {
      * @param {*} res 
      */
     register(req, res) {   
-        getCollection('users')
-            .then((collection) => {
-                const user = req.body;
-                //collection.insert();
-                console.log('register body', user);
-            })
-            .catch((e) => sendError(res, e));
+        const user = req.body;
+        //collection.insert();
+        console.log('register body', reg);
+        
     }
 };
 
