@@ -68,7 +68,7 @@ class Api100 {
             const hash = hashSomething(req.body.password + 'samplesalt');
             getCollection('api_users')
                 .then((collection) => {
-                    console.log('Verify: ', identityData);
+                    console.log('Verify: ', req.body);
                     collection.findOne({
                         email: email,
                         hash: hash

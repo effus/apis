@@ -15,3 +15,13 @@ content-type: application/json
     "name": "Name1",
     "password": "abcdef"
 }
+
+###
+
+POST https://effus-apis.herokuapp.com/meetapi/1.0.0/user/login
+content-type: application/json
+
+{
+    "email": "test@email.com",
+    "password": "abcdef"
+}
