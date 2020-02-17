@@ -3,25 +3,24 @@ const express = require('express');
 const router = express.Router();
 const Db = require('./mongo.js');
 
+const getCollection = (name) => {
+    return new Promise((resolve, reject) => {
+        this.Db.connect().then((client) => {
+            const db = client.db('heroku_xjdq05dr');
+            resolve(db.collection(name));
+        }).catch(reject);
+    });
+}
+
 class Api100 {
-    
-    getCollection(name) {
-        return new Promise((resolve, reject) => {
-            this.Db.connect().then((client) => {
-                const db = client.db('heroku_xjdq05dr');
-                resolve(db.collection(name));
-            }).catch(reject);
-        });
-    }
 
     register(req, res) {
         
-        this.getCollection('users').find().toArray((err, items) => {
+        getCollection('users').find().toArray((err, items) => {
             console.log('register', items);
             res.send({wtf:true, items: items});
         });
     
-        
     }
 
 };
