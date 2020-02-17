@@ -41,7 +41,7 @@ class Api100 {
      * @param {*} res 
      */
     register(req, res) {   
-        const user = req.body;
+        //const user = req;
         //collection.insert();
         console.log('register body', reg);
         
