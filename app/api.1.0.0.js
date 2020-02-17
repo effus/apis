@@ -26,9 +26,10 @@ class Api100 {
                 
             // });
         //})
-        Db.connect().then((connect) => {
+        Db.connect().then((client) => {
             //const users = connect.collection('users');
-            console.log('register', connect);
+            
+            console.log('register', client.collection('users'));
             res.send({wtf:true});
         });
         
