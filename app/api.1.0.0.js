@@ -3,6 +3,9 @@ const express = require('express');
 const router = express.Router();
 const Db = require('./mongo.js');
 
+var app = express();
+app.use(express.json()); 
+
 const getCollection = (name) => {
     return new Promise((resolve, reject) => {
         Db.connect().then((client) => {
@@ -12,24 +15,47 @@ const getCollection = (name) => {
     });
 }
 
+const sendError = (res, e) => {
+    res.send({error: true, message: e.message});
+}
+
 class Api100 {
 
-    register(req, res) {
-        
-        getCollection('users').then((collection) => {
-            collection.find().toArray((err, items) => {
-                console.log('register', items);
-                res.send({wtf:true, items: items});
-            });
-        });
-    
+    list(req, res) {
+        getCollection('users')
+            .then((collection) => {
+                collection.find().toArray((err, items) => {
+                    console.log('register', items);
+                    res.send({list: items});
+                });
+            })
+            .catch((e) => sendError(res, e));
     }
 
+    get(req, res) {
+        res.send({id:33333, hash:req.params.hash});
+    }
+
+    /**
+     * @param {*} req 
+     * @param {*} res 
+     */
+    register(req, res) {   
+        getCollection('users')
+            .then((collection) => {
+                const user = req.body;
+                //collection.insert();
+                console.log('register body', user);
+            })
+            .catch((e) => sendError(res, e));
+    }
 };
 
 const Api = new Api100();
 
-router.get('/user/register', Api.register);
+router.get('/user', Api.list);
+router.get('/user/:hash', Api.get);
+router.put('/user', Api.register);
 
 /**
  * API for Date simulator
