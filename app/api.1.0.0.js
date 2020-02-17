@@ -2,9 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Db = require('./mongo.js');
-
-var app = express();
-app.use(express.json()); 
+ 
 
 const getCollection = (name) => {
     return new Promise((resolve, reject) => {
