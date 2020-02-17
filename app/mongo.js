@@ -29,4 +29,18 @@ const getCollection = (name) => {
     });
 }
 
-module.exports = {Mongo, getCollection};
+const insertIntoCollection(collection, valueObject) => {
+    return new Promise((resolve, reject) => {
+        Mongo.connect().then((client) => {
+            const db = client.db(MongoConfig.db_name);
+            db.collection(collection).insertOne(valueObject, (err, res) => {
+                if (err) {
+                    reject();
+                }
+                resolve(res);
+            });
+        }).catch(reject);
+    });
+}
+
+module.exports = {Mongo, getCollection, insertIntoCollection};

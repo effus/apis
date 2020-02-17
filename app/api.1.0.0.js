@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const {getCollection} = require('./mongo');
+const {getCollection, insertIntoCollection} = require('./mongo');
 const UserVo = require('./vo/UserVo');
 
 const sendError = (res, e) => {
@@ -41,17 +41,15 @@ class Api100 {
                 passwordHash,
                 requestUser.name
             );
-            res.send({result: true, user: user});
+            insertIntoCollection('api_users', user)
+                .then((insertResult) => {
+                    res.send({result: true, inserted: insertResult});
+                })
+                .catch((e) => sendError(res, e));
 
         } catch(e) {
             sendError(res, e)
         }
-        //const user = req;
-        //collection.insert();
-        console.log('register body', req.body);
-        
-        const request = req.body;
-        res.send({result:true});
     }
 };
 
