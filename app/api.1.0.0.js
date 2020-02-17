@@ -43,8 +43,8 @@ class Api100 {
     register(req, res) {   
         //const user = req;
         //collection.insert();
-        console.log('register body', req);
-        
+        console.log('register body', req.body);
+        res.send({result:true});
     }
 };
 
