@@ -16,9 +16,11 @@ class Api100 {
 
     register(req, res) {
         
-        getCollection('users').find().toArray((err, items) => {
-            console.log('register', items);
-            res.send({wtf:true, items: items});
+        getCollection('users').then((collection) => {
+            collection.find().toArray((err, items) => {
+                console.log('register', items);
+                res.send({wtf:true, items: items});
+            });
         });
     
     }
