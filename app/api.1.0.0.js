@@ -1,11 +1,11 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const Db = require('./mongo.js');
+const Mongo = require('./mongo.js');
 
 const getCollection = (name) => {
     return new Promise((resolve, reject) => {
-        this.Db.connect().then((client) => {
+        Mongo.connect().then((client) => {
             const db = client.db('heroku_xjdq05dr');
             resolve(db.collection(name));
         }).catch(reject);
