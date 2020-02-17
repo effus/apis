@@ -5,7 +5,8 @@ class UserVo {
         this.email = email;
         this.hash = hash;
         this.name = name;
-        this.bots = {}
+        this.bots = {};
+        this.devices = []; //@todo
     }
 }
 module.exports = UserVo;

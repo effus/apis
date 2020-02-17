@@ -51,6 +51,7 @@ class Api100 {
                 requestUser.name
             );
             //@todo check not exist
+            //@todo Antiflood
             insertIntoCollection('api_users', user)
                 .then((insertResult) => {
                     res.send({result: true, user_id: insertResult.insertedId});
@@ -66,6 +67,7 @@ class Api100 {
         try {
             const email = req.body.email;
             const hash = hashSomething(req.body.password + 'samplesalt');
+            //@todo Antiflood
             getCollection('api_users')
                 .then((collection) => {
                     console.log('Verify: ', req.body);
@@ -73,6 +75,7 @@ class Api100 {
                         email: email,
                         hash: hash
                     }, (err, user) => {
+                        //@todo check device and update in list
                         res.send({result: true, user: user});
                     });
                 })
@@ -89,13 +92,5 @@ router.get('/user', Api.list);
 router.get('/user/:id', Api.get);
 router.put('/user', Api.register);
 router.post('/user/login/', Api.verify);
-
-/**
- * API for Date simulator
- */
-
-/*
-
-module.exports = Api100; */
 
 module.exports = router
