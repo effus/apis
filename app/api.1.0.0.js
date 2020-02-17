@@ -11,7 +11,7 @@ const sendError = (res, e) => {
 class Api100 {
 
     list(req, res) {
-        getCollection('meetapi')
+        getCollection('api_users')
             .then((collection) => {
                 collection.find().toArray((err, items) => {
                     console.log('list', items);
@@ -30,9 +30,27 @@ class Api100 {
      * @param {*} res 
      */
     register(req, res) {   
+        try {
+            if (!req) {
+                new Error('Bad request parameters')
+            }
+            const requestUser = req.body;
+            const passwordHash = '123';
+            const user = new UserVo(
+                requestUser.email,
+                passwordHash,
+                requestUser.name
+            );
+            res.send({result: true, user: user});
+
+        } catch(e) {
+            sendError(res, e)
+        }
         //const user = req;
         //collection.insert();
         console.log('register body', req.body);
+        
+        const request = req.body;
         res.send({result:true});
     }
 };
