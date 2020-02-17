@@ -29,7 +29,7 @@ const getCollection = (name) => {
     });
 }
 
-const insertIntoCollection(collection, valueObject) => {
+const insertIntoCollection = (collection, valueObject) => {
     return new Promise((resolve, reject) => {
         Mongo.connect().then((client) => {
             const db = client.db(MongoConfig.db_name);
