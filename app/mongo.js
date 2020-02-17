@@ -18,4 +18,4 @@ class Db {
     }
 };
 
-module.exports.mongo = new Db();
+module.exports.Mongo = new Db();
