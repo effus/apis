@@ -1,5 +1,6 @@
 {
     "production": {
-        "use_env_variable": "MONGODB_URI"
+        "use_env_variable": "MONGODB_URI",
+        "db_name": "heroku_xjdq05dr"
     }
 }

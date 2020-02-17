@@ -1,17 +1,8 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const Db = require('./mongo.js');
- 
-
-const getCollection = (name) => {
-    return new Promise((resolve, reject) => {
-        Db.connect().then((client) => {
-            const db = client.db('heroku_xjdq05dr');
-            resolve(db.collection(name));
-        }).catch(reject);
-    });
-}
+const {getCollection} = require('./mongo');
+const UserVo = require('./vo/UserVo');
 
 const sendError = (res, e) => {
     res.send({error: true, message: e.message});
@@ -20,10 +11,10 @@ const sendError = (res, e) => {
 class Api100 {
 
     list(req, res) {
-        getCollection('users')
+        getCollection('meetapi')
             .then((collection) => {
                 collection.find().toArray((err, items) => {
-                    console.log('register', items);
+                    console.log('list', items);
                     res.send({list: items});
                 });
             })

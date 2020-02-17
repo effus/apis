@@ -1,5 +1,7 @@
-GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user/dasdasd
+GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user
 
+
+###
 
 PUT https://effus-apis.herokuapp.com/meetapi/1.0.0/user
 content-type: application/json

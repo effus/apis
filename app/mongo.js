@@ -18,4 +18,15 @@ class Db {
     }
 };
 
-module.exports = new Db();
+const Mongo = new Db();
+
+const getCollection = (name) => {
+    return new Promise((resolve, reject) => {
+        Mongo.connect().then((client) => {
+            const db = client.db(MongoConfig.db_name);
+            resolve(db.collection(name));
+        }).catch(reject);
+    });
+}
+
+export {Mongo, getCollection};
