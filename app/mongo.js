@@ -1,5 +1,5 @@
 const MongoClient    = require('mongodb').MongoClient;
-const MongoConfig = require('./mongo.json')['production'];
+const MongoConfig = require('./../mongo.json')['production'];
 
 class Db {
     constructor() {

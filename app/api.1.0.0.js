@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const Db = require('./../mongo.js');
+const Db = require('./mongo.js');
 
 class Api100 {
     
@@ -26,7 +26,8 @@ class Api100 {
                 
             // });
         //})
-        console.log('register', this);
+        const connect = (new Db()).connect();
+        console.log('register', connect);
         res.send({wtf:true});
     }
 
