@@ -28,7 +28,7 @@ class Api100 {
         //})
         Db.connect().then((connect) => {
             //const users = connect.collection('users');
-            console.log('register');
+            console.log('register', connect);
             res.send({wtf:true});
         });
         
