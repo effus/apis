@@ -43,9 +43,6 @@ class Api100 {
      */
     register(req, res) {   
         try {
-            if (!req) {
-                new Error('Bad request parameters')
-            }
             const requestUser = req.body;
             const passwordHash = hashSomething(requestUser.password + 'samplesalt');
             const user = new UserVo(
@@ -53,6 +50,7 @@ class Api100 {
                 passwordHash,
                 requestUser.name
             );
+            //@todo check not exist
             insertIntoCollection('api_users', user)
                 .then((insertResult) => {
                     res.send({result: true, user_id: insertResult.insertedId});
@@ -63,6 +61,27 @@ class Api100 {
             sendError(res, e)
         }
     }
+
+    verify(req, res) {
+        try {
+            const email = req.body.email;
+            const hash = hashSomething(req.body.password + 'samplesalt');
+            getCollection('api_users')
+                .then((collection) => {
+                    console.log('Verify: ', identityData);
+                    collection.findOne({
+                        email: email,
+                        hash: hash
+                    })
+                        .toArray((err, user) => {
+                            res.send({result: true, user: user});
+                        });
+                })
+                .catch((e) => sendError(res, e));
+        } catch (e) {
+            sendError(res, e)
+        }
+    }
 };
 
 const Api = new Api100();
@@ -70,6 +89,7 @@ const Api = new Api100();
 router.get('/user', Api.list);
 router.get('/user/:id', Api.get);
 router.put('/user', Api.register);
+router.post('/user/login/', Api.verify);
 
 /**
  * API for Date simulator

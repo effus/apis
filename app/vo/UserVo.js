@@ -1,9 +1,9 @@
 'use strict';
 
 class UserVo {
-    constructor(email, passwordHash, name) {
+    constructor(email, hash, name) {
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.hash = hash;
         this.name = name;
         this.bots = {}
     }
