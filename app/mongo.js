@@ -11,11 +11,11 @@ class Db {
                 if (err) {
                     reject();
                 }
-                console.log('Mongo: connected to', this.url);
+                console.log('Mongo connected to', this.url);
                 resolve(database);
             });
         });
     }
 };
 
-module.exports.Mongo = new Db();
+module.exports = new Db();
