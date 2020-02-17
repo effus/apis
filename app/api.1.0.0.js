@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const {getCollection, insertIntoCollection} = require('./mongo');
 const UserVo = require('./vo/UserVo');
+const ObjectID = require('mongodb').ObjectID;
 
 const sendError = (res, e) => {
     res.send({error: true, message: e.message});
@@ -23,7 +24,7 @@ class Api100 {
     get(req, res) {
         getCollection('api_users')
             .then((collection) => {
-                collection.find({_id: req.param.id}).toArray((err, user) => {
+                collection.find({_id: ObjectID(req.param.id)}).toArray((err, user) => {
                     res.send({result: true, user: user});
                 });
             })
