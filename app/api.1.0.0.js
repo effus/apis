@@ -29,8 +29,10 @@ class Api100 {
         Db.connect().then((client) => {
             //const users = connect.collection('users');
             const db = client.db('heroku_xjdq05dr');
-            console.log('register', db.collection('users'));
-            res.send({wtf:true});
+            const users = db.collection('users').find().toArray((err, items) => {
+                console.log('register', items);
+                res.send({wtf:true, items: items});
+            });
         }).catch((e) => {
             console.debug('error', e);
         });
