@@ -31,6 +31,8 @@ class Api100 {
             
             console.log('register', client.collection('users'));
             res.send({wtf:true});
+        }).catch((e) => {
+            console.debug('error', e);
         });
         
     }
