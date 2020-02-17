@@ -14,15 +14,20 @@ class Api100 {
         getCollection('api_users')
             .then((collection) => {
                 collection.find().toArray((err, items) => {
-                    console.log('list', items);
-                    res.send({list: items});
+                    res.send({result: true, list: items});
                 });
             })
             .catch((e) => sendError(res, e));
     }
 
     get(req, res) {
-        res.send({id:33333, hash:req.params.hash});
+        getCollection('api_users')
+            .then((collection) => {
+                collection.find({_id: req.param.id}).toArray((err, user) => {
+                    res.send({result: true, user: user});
+                });
+            })
+            .catch((e) => sendError(res, e));
     }
 
     /**
@@ -43,7 +48,7 @@ class Api100 {
             );
             insertIntoCollection('api_users', user)
                 .then((insertResult) => {
-                    res.send({result: true, inserted: insertResult});
+                    res.send({result: true, user_id: insertResult.insertedId});
                 })
                 .catch((e) => sendError(res, e));
 
@@ -56,7 +61,7 @@ class Api100 {
 const Api = new Api100();
 
 router.get('/user', Api.list);
-router.get('/user/:hash', Api.get);
+router.get('/user/:id', Api.get);
 router.put('/user', Api.register);
 
 /**
