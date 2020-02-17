@@ -11,6 +11,7 @@ class Db {
                 if (err) {
                     reject();
                 }
+                console.log('Mongo: connected to', this.url);
                 resolve(database);
             });
         });
