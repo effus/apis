@@ -29,4 +29,4 @@ const getCollection = (name) => {
     });
 }
 
-export {Mongo, getCollection};
+module.exports = {Mongo, getCollection};
