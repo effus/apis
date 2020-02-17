@@ -4,9 +4,14 @@ const router = express.Router();
 const {getCollection, insertIntoCollection} = require('./mongo');
 const UserVo = require('./vo/UserVo');
 const ObjectID = require('mongodb').ObjectID;
+const crypto = require('crypto');
 
 const sendError = (res, e) => {
     res.send({error: true, message: e.message});
+}
+
+const hashSomething = (str) => {
+    return crypto.createHash('sha256').update(str).digest('hex');
 }
 
 class Api100 {
@@ -24,7 +29,7 @@ class Api100 {
     get(req, res) {
         getCollection('api_users')
             .then((collection) => {
-                console.log('Find: ', req.params.id  );
+                console.log('Get user: ', req.params.id  );
                 collection.find({_id: new ObjectID(req.params.id)}).toArray((err, user) => {
                     res.send({result: true, user: user});
                 });
@@ -42,7 +47,7 @@ class Api100 {
                 new Error('Bad request parameters')
             }
             const requestUser = req.body;
-            const passwordHash = '123';
+            const passwordHash = hashSomething(requestUser.password + 'samplesalt');
             const user = new UserVo(
                 requestUser.email,
                 passwordHash,
