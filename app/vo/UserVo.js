@@ -7,5 +7,4 @@ class UserVo {
         this.name = name;
     }
 }
-
-export default UserVo;
+module.exports = UserVo;
