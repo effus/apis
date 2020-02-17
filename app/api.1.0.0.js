@@ -72,10 +72,9 @@ class Api100 {
                     collection.findOne({
                         email: email,
                         hash: hash
-                    })
-                        .toArray((err, user) => {
-                            res.send({result: true, user: user});
-                        });
+                    }, (err, user) => {
+                        res.send({result: true, user: user});
+                    });
                 })
                 .catch((e) => sendError(res, e));
         } catch (e) {
