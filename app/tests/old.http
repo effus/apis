@@ -1,0 +1,31 @@
+GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user
+
+### 
+
+GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user/5e69f85d8d5e500004ddbc0f
+
+
+###
+
+PUT https://effus-apis.herokuapp.com/meetapi/1.0.0/user
+content-type: application/json
+
+{
+    "email": "test@email.com",
+    "name": "Name1",
+    "password": "abcdef"
+}
+
+###
+
+POST https://effus-apis.herokuapp.com/meetapi/1.0.0/user/login
+content-type: application/json
+
+{
+    "email": "test@email.com",
+    "password": "abcdef"
+}
+
+
+
+

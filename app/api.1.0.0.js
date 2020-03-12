@@ -1,86 +1,84 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const {getCollection, insertIntoCollection} = require('./mongo');
-const UserVo = require('./vo/UserVo');
-const ObjectID = require('mongodb').ObjectID;
-const crypto = require('crypto');
+//const {getCollection, insertIntoCollection} = require('./mongo');
+//const UserVo = require('./vo/UserVo');
+//const ObjectID = require('mongodb').ObjectID;
+//const crypto = require('crypto');
+const UserService = require('./services/UserService.js'); 
 
 const sendError = (res, e) => {
+    //throw e;
     res.send({error: true, message: e.message});
-}
-
-const hashSomething = (str) => {
-    return crypto.createHash('sha256').update(str).digest('hex');
 }
 
 class Api100 {
 
-    list(req, res) {
-        getCollection('api_users')
-            .then((collection) => {
-                collection.find().toArray((err, items) => {
-                    res.send({result: true, list: items});
-                });
-            })
-            .catch((e) => sendError(res, e));
-    }
-
-    get(req, res) {
-        getCollection('api_users')
-            .then((collection) => {
-                console.log('Get user: ', req.params.id  );
-                collection.find({_id: new ObjectID(req.params.id)}).toArray((err, user) => {
-                    res.send({result: true, user: user});
-                });
-            })
-            .catch((e) => sendError(res, e));
-    }
-
     /**
+     * Авторизация по токену
      * @param {*} req 
      * @param {*} res 
      */
-    register(req, res) {   
+    getUserByAuthToken(req, res) {
         try {
-            const requestUser = req.body;
-            const passwordHash = hashSomething(requestUser.password + 'samplesalt');
-            const user = new UserVo(
-                requestUser.email,
-                passwordHash,
-                requestUser.name
-            );
-            //@todo check not exist
-            //@todo Antiflood
-            insertIntoCollection('api_users', user)
-                .then((insertResult) => {
-                    res.send({result: true, user_id: insertResult.insertedId});
+            const userService = new UserService();
+            let token = '';
+            if (req.headers.authorization) {
+                token = req.headers.authorization.replace(/token/g, '').trim();
+            }
+            if (!token) {
+                throw Error('Bad authorization header');
+            }
+            userService.getUserByAuthToken(token)
+                .then((result) => {
+                    res.send({result: true, user: result});
                 })
-                .catch((e) => sendError(res, e));
-
-        } catch(e) {
+                .catch(e => sendError(res, e));
+        } catch (e) {
             sendError(res, e)
         }
     }
 
-    verify(req, res) {
+    /**
+     * Регистрация
+     * @param {*} req 
+     * @param {*} res 
+     */
+    registerBaseUser(req, res) {
         try {
-            const email = req.body.email;
-            const hash = hashSomething(req.body.password + 'samplesalt');
-            //@todo Antiflood
-            getCollection('api_users')
-                .then((collection) => {
-                    console.log('Verify: ', req.body);
-                    collection.findOne({
-                        email: email,
-                        hash: hash
-                    }, (err, user) => {
-                        //@todo check device and update in list
-                        res.send({result: true, user: user});
-                    });
+            const request = req.body;
+            if (!request || !request.email || !request.name || !request.password) {
+                throw Error('Some request parameters is empty');
+            }
+            new UserService().registerBaseUser(request.email, request.name, request.password)
+                .then((result) => {
+                    res.send({result: true, user: result});
                 })
-                .catch((e) => sendError(res, e));
+                .catch(e => sendError(res, e));
         } catch (e) {
+            throw e;
+            sendError(res, e)
+        }
+    }
+
+    /**
+     * авторизация по емейлу-паролю
+     * @param {*} req 
+     * @param {*} res 
+     */
+    getUserByEmailPassword(req, res) {
+        try {
+            const request = req.body;
+            if (!request || !request.email || !request.password) {
+                throw Error('Some request parameters is empty');
+            }
+            new UserService().getUserByEmailPassword(request.email, request.password)
+                .then((result) => {
+                    res.send({result: true, user: result});
+                })
+                .catch(e => sendError(res, e));
+        } catch (e) {
+            throw e;
             sendError(res, e)
         }
     }
@@ -91,9 +89,10 @@ const Api = new Api100();
 router.get('/', () => {
     return {result: true};
 });
-router.get('/user', Api.list);
-router.get('/user/:id', Api.get);
-router.put('/user', Api.register);
-router.post('/user/login/', Api.verify);
+
+router.get('/user/me', Api.getUserByAuthToken);
+router.put('/user/register', Api.registerBaseUser);
+router.post('/user/login', Api.getUserByEmailPassword);
+
 
 module.exports = router

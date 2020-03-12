@@ -15,5 +15,5 @@ app.get('/apiinfo', (req, res) => {
     res.send({ apis: ['1.0.0'], db: {connected: true}});
   });
 })
-app.use('/meetapi/1.0.0', Api100);
+app.use('/datesimapi/1.0.0', Api100);
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

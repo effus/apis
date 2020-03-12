@@ -1,27 +1,23 @@
-GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user
-
-### 
-
-GET https://effus-apis.herokuapp.com/meetapi/1.0.0/user/5e4af54909c8ba0004e5f8aa
+### Get user by auth token
+http://localhost:5000/datesimapi/1.0.0/user/me
+Authorization: token 5e6a3a521969aa5a941b11af:2dd661550c57302f2f164d5c6f57163567bc159bacfd03fce4fbb2c3a30f5b83
 
 
-###
-
-PUT https://effus-apis.herokuapp.com/meetapi/1.0.0/user
+### Register new user
+PUT http://localhost:5000/datesimapi/1.0.0/user/register
 content-type: application/json
 
 {
-    "email": "test@email.com",
-    "name": "Name1",
+    "email": "test4@email.com",
+    "name": "test4",
     "password": "abcdef"
 }
 
-###
-
-POST https://effus-apis.herokuapp.com/meetapi/1.0.0/user/login
+### Register new user
+POST http://localhost:5000/datesimapi/1.0.0/user/login
 content-type: application/json
 
 {
-    "email": "test@email.com",
+    "email": "test4@email.com",
     "password": "abcdef"
 }
