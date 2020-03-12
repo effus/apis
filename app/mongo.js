@@ -1,5 +1,12 @@
 const MongoClient = require('mongodb').MongoClient;
 const MongoConfig = require('./../mongo.json')['production'];
+const mongoParams = {
+    server: {
+        socketOptions: {
+            connectTimeoutMS: 5000
+        }
+    }
+};
 
 class Db {
     constructor() {
@@ -7,7 +14,7 @@ class Db {
     }
     connect() {
         return new Promise((resolve, reject) => {
-            MongoClient.connect(this.url, (err, database) => {
+            MongoClient.connect(this.url, mongoParams, (err, database) => {
                 if (err) {
                     reject();
                 }

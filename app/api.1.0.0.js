@@ -5,7 +5,7 @@ const router = express.Router();
 //const UserVo = require('./vo/UserVo');
 //const ObjectID = require('mongodb').ObjectID;
 //const crypto = require('crypto');
-const UserService = require('./services/UserService.js'); 
+const UserService = require('./services/UserService.js');
 
 const sendError = (res, e) => {
     //throw e;
@@ -14,10 +14,14 @@ const sendError = (res, e) => {
 
 class Api100 {
 
+    ping(req, res) {
+	res.send({result:true});
+    }
+
     /**
      * Авторизация по токену
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     getUserByAuthToken(req, res) {
         try {
@@ -41,8 +45,8 @@ class Api100 {
 
     /**
      * Регистрация
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     registerBaseUser(req, res) {
         try {
@@ -63,8 +67,8 @@ class Api100 {
 
     /**
      * авторизация по емейлу-паролю
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     getUserByEmailPassword(req, res) {
         try {
@@ -86,10 +90,7 @@ class Api100 {
 
 const Api = new Api100();
 
-router.get('/', () => {
-    return {result: true};
-});
-
+router.get('/', Api.ping);
 router.get('/user/me', Api.getUserByAuthToken);
 router.put('/user/register', Api.registerBaseUser);
 router.post('/user/login', Api.getUserByEmailPassword);
