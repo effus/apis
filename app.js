@@ -7,7 +7,7 @@ let app = express();
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')))
-app.get('/ping', (req, res) => {
+app.get('/', (req, res) => {
     res.send({result: true});
 });
 app.get('/apiinfo', (req, res) => {

@@ -88,6 +88,9 @@ class Api100 {
 
 const Api = new Api100();
 
+router.get('/', () => {
+    return {result: true};
+});
 router.get('/user', Api.list);
 router.get('/user/:id', Api.get);
 router.put('/user', Api.register);
