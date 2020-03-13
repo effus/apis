@@ -44,14 +44,14 @@ class AuthService {
     }
 
     /**
-     * @param {*} userId 
-     * @param {*} originToken 
-     * @param {*} receivedToken 
+     * @param {TokenVo} tokenVo 
+     * @param {string} originToken 
+     * @param {string} tokenExpires 
      */
-    validateToken(userId, originToken, receivedToken, tokenExpires) {
-        const control = hashSomething(userId, originToken);
+    validateToken(tokenVo, originToken, tokenExpires) {
+        const control = hashSomething(tokenVo.timestamp + originToken);
         console.debug('Token control hash', control);
-        if (control !== receivedToken) {
+        if (control !== tokenVo.hash) {
             throw Error('Invalid token');
         }
         const tokenExpireTime = new Date(tokenExpires);

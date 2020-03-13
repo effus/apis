@@ -1,10 +1,10 @@
 'use strict';
 
 const {getCollection, insertIntoCollection, updateInCollection} = require('../mongo');
-const UserVo = require('../vo/UserVo');
 const ObjectID = require('mongodb').ObjectID;
 const {AuthService, hashSomething} = require('./AuthService');
-
+const UserVo = require('../vo/UserVo');
+const {TokenVo} = require('../vo/TokenVo');
 
 
 const UserFlags = {
@@ -59,17 +59,14 @@ class UserService {
      * @param {string} token 
      */
     async getUserByAuthToken(token) {
-        const hashes = token.split(':');
-        if (hashes.length !== 2) {
-            throw Error('Bad token format');
-        }
+        const tokenVo = new TokenVo(token);
         const result = await this.findUser({
-            _id: new ObjectID(hashes[0])
+            _id: new ObjectID(tokenVo.uid)
         });
         if (!result) {
             throw Error('User not found');
         }
-        this.authService.validateToken(hashes[0], result.token, hashes[1], result.token_expires);
+        this.authService.validateToken(tokenVo, result.token, result.token_expires);
         return this.getUserVoByData(result);
     }
 
@@ -135,11 +132,14 @@ class UserService {
     async getUserByEmailPassword(email, password) {
         const hashedPassword = this.authService.securePassword(password);
         const result = await this.findUser({
-            email: email,
-            hashed_password: hashedPassword
+            email: email
         });
         if (!result) {
             throw Error('User not found');
+        }
+        if (result.hashed_password !== hashedPassword) {
+            //@todo ban if too much tries
+            throw Error('Incorrect password');
         }
         const userId = result._id;
         result.token = this.authService.getToken();
