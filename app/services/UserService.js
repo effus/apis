@@ -2,7 +2,7 @@
 
 const {getCollection, insertIntoCollection, updateInCollection} = require('../mongo');
 const ObjectID = require('mongodb').ObjectID;
-const {AuthService, hashSomething} = require('./AuthService');
+const {AuthService} = require('./AuthService');
 const UserVo = require('../vo/UserVo');
 const {TokenVo} = require('../vo/TokenVo');
 
@@ -26,6 +26,17 @@ class UserService {
         userVo.setPermissions(result.permissions);
         userVo.setPersonalData(result.email, result.name);
         return userVo;
+    }
+
+    async getUserVoByRequest(req) {
+        let token = '';
+        if (req.headers.authorization) {
+            token = req.headers.authorization.replace(/token/g, '').trim();
+        }
+        if (!token) {
+            throw Error('Bad authorization token');
+        }
+        return await this.getUserByAuthToken(token);
     }
 
     /**
