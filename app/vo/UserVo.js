@@ -1,12 +1,30 @@
 'use strict';
 
 class UserVo {
-    constructor(email, hash, name) {
-        this.email = email;
-        this.hash = hash;
-        this.name = name;
+    constructor(id) {
+        this.id = id;
+        this.email = '';
+        this.name = '';
         this.bots = {};
-        this.devices = []; //@todo
+        this.permissions = [];
+    }
+
+    setPersonalData(email, name) {
+        this.email = email;
+        this.name = name;
+    }
+
+    setBots(bots) {
+        this.bots = bots;
+    }
+
+    setPermissions(permissions) {
+        this.permissions = permissions;
+    }
+
+    setToken(token) {
+        this.token = token;
     }
 }
+
 module.exports = UserVo;
