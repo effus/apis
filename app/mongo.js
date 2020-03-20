@@ -7,6 +7,7 @@ const mongoParams = {
         }
     }
 };
+const ObjectID = require('mongodb').ObjectID;
 
 class Db {
     constructor() {
@@ -42,6 +43,7 @@ const insertIntoCollection = async (collection, valueObject) => {
             const db = client.db(MongoConfig.db_name);
             db.collection(collection).insertOne(valueObject, (err, res) => {
                 if (err) {
+                    console.error('insertIntoCollection', err);
                     reject(err);
                 }
                 resolve(res);
@@ -50,18 +52,33 @@ const insertIntoCollection = async (collection, valueObject) => {
     });
 }
 
-const updateInCollection = async (collection, valueObject, id) => {
+const updateInCollection = async (collection, document, searchParams) => {
+    const client = await Mongo.connect();
+    const db = client.db(MongoConfig.db_name);
+    const result = await db.collection(collection).updateOne(
+        searchParams, 
+        //{$addToSet: {messages: [1,2,3]}}
+        {$set: document}
+    );
+    console.debug('result', searchParams);
+    return result;
+}
+
+const saveDocumentInCollection = async (collection, document) => {
     return await new Promise((resolve, reject) => {
         Mongo.connect().then((client) => {
             const db = client.db(MongoConfig.db_name);
-            db.collection(collection).updateOne({_id: id}, {$set:valueObject}, (err, res) => {
+            console.debug('saveDocumentInCollection', document);
+            db.collection(collection).save(document, (err, res) => {
                 if (err) {
+                    console.error('saveDocumentInCollection', err);
                     reject(err);
                 }
+                console.debug('saveDocumentInCollection OK', document);
                 resolve(res);
             });
         }).catch(reject);
     });
 }
 
-module.exports = {Mongo, getCollection, insertIntoCollection, updateInCollection};
+module.exports = {Mongo, getCollection, insertIntoCollection, updateInCollection, saveDocumentInCollection};

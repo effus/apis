@@ -15,7 +15,7 @@ class BotVo {
     }
 
     setMessages(messages) {
-        this.messages = messages;
+        this.messages = messages ? messages : [];
     }
 }
 

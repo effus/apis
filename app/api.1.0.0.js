@@ -126,9 +126,27 @@ class Api100 {
      * @param {*} res 
      */
     getMyOwnBot(req, res) {
-        //res.send({result: true, bots: req.params.botId});
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).getMyOwnBot(req.params.botId))
+            .then((bot) => {
+                res.send({result: true, bot: bot});
+            })
+            .catch((e) => {
+                console.error('getMyOwnBot fail', e);
+                sendError(res, e)
+            });
+    }
+
+    setMyOwnBotMessages(req, res) {
+        const body = req.body;
+        if (!body) {
+            throw Error('Some request parameters is empty');
+        }
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).setMyOwnBotMessages(
+                req.params.botId,
+                body.messages
+            ))
             .then((bot) => {
                 res.send({result: true, bot: bot});
             })
@@ -148,5 +166,6 @@ router.post('/user/login', Api.getUserByEmailPassword);
 router.put('/bot', Api.createBot);
 router.get('/bots/own', Api.getMyOwnBots);
 router.get('/bot/own/:botId', Api.getMyOwnBot);
+router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);
 
 module.exports = router

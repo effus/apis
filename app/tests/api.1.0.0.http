@@ -47,6 +47,20 @@ Content-Type: application/json;charset=UTF-8
 
 PUT http://localhost:5000/datesimapi/1.0.0/bot/
 Content-Type: application/json;charset=UTF-8
-Authorization: token 5e6f13c1cbfa78069ca7c6f5:1584616706314:679fb03d6bf92102fd4fbb219e084205769af2050f3dc3c360c17ac2ff5e6e50
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584731987798:ddae5712864b884a140c87faeedfbd5b1eb7e026c50be342a82b05a1c02158fb
 
 {"name": "456", "gender": "Female", "photo": ""}
+
+### 
+
+GET http://localhost:5000/datesimapi/1.0.0/bot/own/5e750669037df7267e21c6a0
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584731987798:ddae5712864b884a140c87faeedfbd5b1eb7e026c50be342a82b05a1c02158fb
+
+###
+
+POST http://localhost:5000/datesimapi/1.0.0/bot/own/5e7524c61271a33157446c34/messages
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584731987798:ddae5712864b884a140c87faeedfbd5b1eb7e026c50be342a82b05a1c02158fb
+
+{"messages":[{"id":"32448","text":"Fsdfsd","cases":[],"next":[]}]}
