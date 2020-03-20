@@ -17,6 +17,7 @@ const hashSomething = (str) => {
 class Api100 {
 
     list(req, res) {
+        
         getCollection('api_users')
             .then((collection) => {
                 collection.find().toArray((err, items) => {
