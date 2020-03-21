@@ -83,9 +83,106 @@ class BotService {
     }
 
     /**
+     * check dublicates, empties, max and min points of message.cases
+     * @param {Array} cases 
+     */
+    checkMessageCases(cases) {
+        let ids = [];
+        if (!Array.isArray(cases)) {
+            throw Error('message.cases is not an array');
+        }
+        for (let i in cases) {
+            if (!cases[i].id) {
+                throw Error('Undefined message.cases.id');
+            }
+            if (ids.includes(cases[i].id)) {
+                throw Error('Dublicate id in message.case');
+            }
+            ids.push(cases[i].id);
+            if (typeof cases[i].text !== 'string') {
+                throw Error('Bad type of message.cases.text');
+            }
+            if (cases[i].text === '') {
+                throw Error('message.cases.text is empty');
+            }
+            if (typeof cases[i].points !== 'number') {
+                throw Error('Bad type of points message.cases.points');
+            }
+            if (cases[i].points < -10) {
+                throw Error('message.cases.points is less than minimal allowed value ');
+            }
+            if (cases[i].points > 10) {
+                throw Error('message.cases.points is greater than maximal allowed value ');
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param {Array} next 
+     */
+    checkMessageNext(next) {
+        if (!Array.isArray(next)) {
+            throw Error('message.next is not an array');
+        }
+        for (let i in next) {
+            if (typeof next[i].id !== 'number') {
+                throw Error('Bad type message.next.id //' + typeof next[i].id);
+            }
+
+            if (typeof next[i].points !== 'number') {
+                throw Error('Bad type message.next.points');
+            }
+            if (typeof next[i].goto !== 'number') {
+                throw Error('Bad type message.next.goto');
+            }
+            if (next[i].points < 0) {
+                throw Error('Bad message.next.goto value');
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param {{
+     *  id: String,
+     *  text: String,
+     *  cases: Array,
+     *  next: Array
+     * }} message
+     * @return boolean
+     */
+    checkMessageStructure(message) {
+        if (!message.id) {
+            throw Error('Indefined id in bot message');
+        }
+        if (!message.text) {
+            throw Error('Indefined text in bot message');
+        }
+        this.checkMessageCases(message.cases);
+        this.checkMessageNext(message.next);
+        return true;
+    }
+
+    /**
+     * @param {Array} messages 
+     * @param {Array} messageIds 
+     */
+    checkNextTargets(messages, messageIds) {
+        for (let i in messages) {
+            for (let j in messages[i].next) {
+                if (!messageIds.includes(messages[i].next[j].id)) {
+                    throw Error('message.next.id has wrong target');
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Запись конфига сообщений
      * @param {*} botId 
-     * @param {*} messages 
+     * @param {Array} messages 
      */
     async setMyOwnBotMessages(botId, messages) {
         let document = await this.findMany({
@@ -95,17 +192,34 @@ class BotService {
         if (!document) {
             throw Error('Bot not found');
         }
+        const bot = new BotVo(document);
+        if (messages.length === 0) {
+            return {
+                updatedCount: 0,
+                bot: bot
+            }
+        }
+        
+        let messageIds = [];
+        for (let i in messages) {
+            this.checkMessageStructure(messages[i]);
+            messageIds.push(messages[i].id);
+        }
+        this.checkNextTargets(messages, messageIds);
+
         const updated = await updateInCollection(
             BotsCollectonName,
-            {
-                messages: messages
-            },
+            {messages: messages},
             {_id: new ObjectID(botId)}
         );
-        const bot = BotVo(bot).setMessages(messages);   
+        
+        bot.setMessages(messages);   
         return {
             updatedCount: updated.modifiedCount,
-            bot: bot
+            bot: bot,
+            stat: {
+                chatItems: messageIds.length
+            }
         };
     }
 }

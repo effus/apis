@@ -63,4 +63,4 @@ POST http://localhost:5000/datesimapi/1.0.0/bot/own/5e7524c61271a33157446c34/mes
 Content-Type: application/json;charset=UTF-8
 Authorization: token 5e6ba5bd92d0810f4e579ba0:1584731987798:ddae5712864b884a140c87faeedfbd5b1eb7e026c50be342a82b05a1c02158fb
 
-{"messages":[{"id":"32448","text":"Fsdfsd","cases":[],"next":[]}]}
+{"messages":[{"id":"32448","text":"Fsdfsd","cases":[{"id": "46395", "points": 0, "text": "First case"}],"next":[{"id": "58256", "points": 1, "goto": 96860}]}]}

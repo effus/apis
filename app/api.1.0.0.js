@@ -9,8 +9,7 @@ const UserService = require('./services/UserService.js');
 const BotService = require('./services/BotService.js');
 
 const sendError = (res, e) => {
-    //throw e;
-    res.send({error: true, message: e.message});
+    res.send({result: false, message: e.message});
 }
 
 class Api100 {
@@ -137,6 +136,11 @@ class Api100 {
             });
     }
 
+    /**
+     * установка сообщений бота
+     * @param {*} req 
+     * @param {*} res 
+     */
     setMyOwnBotMessages(req, res) {
         const body = req.body;
         if (!body) {
@@ -147,8 +151,8 @@ class Api100 {
                 req.params.botId,
                 body.messages
             ))
-            .then((bot) => {
-                res.send({result: true, bot: bot});
+            .then((result) => {
+                res.send({result: true, bot: result.bot, updatedCount: result.updatedCount});
             })
             .catch((e) => {
                 console.error('getMyOwnBot fail', e);
