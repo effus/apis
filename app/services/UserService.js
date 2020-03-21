@@ -6,6 +6,7 @@ const {AuthService} = require('./AuthService');
 const UserVo = require('../vo/UserVo');
 const {TokenVo} = require('../vo/TokenVo');
 
+const UserCollectonName = 'api_users';
 
 const UserFlags = {
     EMAIL_VERIFIED: 1
@@ -44,7 +45,7 @@ class UserService {
      * @param {*} params 
      */
     async findUser(params) {
-        const collection = await getCollection('api_users');
+        const collection = await getCollection(UserCollectonName);
         return new Promise((resolve, reject) => {
             try {
                 collection.findOne(params, (err, user) => {
@@ -61,8 +62,8 @@ class UserService {
     }
 
     async updateUser(params, userId) {
-        const collection = await getCollection('api_users');
-        
+        const collection = await getCollection(UserCollectonName);
+        //@todo
     }
 
     /**
@@ -128,7 +129,7 @@ class UserService {
             token: token
         };
         await this.checkUserExists(email, token);
-        const insertResult = await insertIntoCollection('api_users', object);
+        const insertResult = await insertIntoCollection(UserCollectonName, object);
         object._id = insertResult.insertedId;
         let vo = this.getUserVoByData(object);
         vo.setToken(token);
@@ -154,10 +155,26 @@ class UserService {
         }
         const userId = result._id;
         result.token = this.authService.getToken();
-        await updateInCollection('api_users', result, userId);
+        await updateInCollection(UserCollectonName, result, userId);
         let vo = this.getUserVoByData(result);
         vo.setToken(result.token);
         return vo;
+    }
+
+    /**
+     * добавление бота в коллекцию
+     * @param {*} botVo 
+     * @param {*} userVo 
+     */
+    async buyBot(botVo, userVo) {
+        let bots = userVo.bots ? userVo.bots : [];
+        bots.push(botVo.id);
+        const updated = await updateInCollection(UserCollectonName, {
+            bots: bots
+        }, userVo.id);
+        return {
+            updatedCount: updated.modifiedCount
+        }
     }
 }
 

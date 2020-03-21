@@ -32,6 +32,20 @@ class BotService {
     }
 
     /**
+     * @param {string} botId 
+     */
+    async getMyBot(botId) {
+        const result = await this.findMany({
+            author: new ObjectID(this.userVo.id),
+            _id: new ObjectID(botId)
+        });
+        if (!result) {
+            throw Error('Bot not found');
+        }
+        return result[0];
+    }
+
+    /**
      * Создание бота
      * @param {string} name 
      * @param {string} gender 
@@ -59,14 +73,7 @@ class BotService {
      * @param {*} photoUrl 
      */
     async updateBot(botId, name, gender, photoUrl) {
-        const result = await this.findMany({
-            author: new ObjectID(this.userVo.id),
-            _id: new ObjectID(botId)
-        });
-        if (!result) {
-            throw Error('Bot not found');
-        }
-        let bot = result[0];
+        let bot = this.getMyBot(botId);
         bot.name = name;
         bot.gender = gender;
         bot.photoUrl = photoUrl;
@@ -103,15 +110,7 @@ class BotService {
      * Получение бота
      */
     async getMyOwnBot(botId) {
-        const result = await this.findMany({
-            author: new ObjectID(this.userVo.id),
-            _id: new ObjectID(botId)
-        });
-        if (!result) {
-            throw Error('Bot not found');
-        }
-        let bot = new BotVo(result[0]);
-        console.log('bot:' + botId, result[0]);
+        let bot = new BotVo(this.getMyBot(botId));
         bot.setMessages(result[0].messages);
         return bot;
     }
@@ -219,14 +218,7 @@ class BotService {
      * @param {Array} messages 
      */
     async setMyOwnBotMessages(botId, messages) {
-        let document = await this.findMany({
-            author: new ObjectID(this.userVo.id),
-            _id: new ObjectID(botId)
-        });
-        if (!document) {
-            throw Error('Bot not found');
-        }
-        const bot = new BotVo(document);
+        const bot = new BotVo(this.getMyBot(botId));
         if (messages.length === 0) {
             return {
                 updatedCount: 0,
@@ -263,18 +255,54 @@ class BotService {
      * @param {*} flag 
      */
     async setPublishFlag(botId, flag) {
-        let document = await this.findMany({
-            author: new ObjectID(this.userVo.id),
-            _id: new ObjectID(botId)
-        });
-        if (!document) {
-            throw Error('Bot not found');
-        }
-        await updateInCollection(
+        this.getMyBot(botId);
+        const updated = await updateInCollection(
             BotsCollectonName,
             {flag_publish: flag},
             {_id: new ObjectID(botId)}
         );
+        return {
+            updatedCount: updated.modifiedCount
+        };
+    }
+
+    /**
+     * список публичных ботов
+     */
+    async getMarketBots() {
+        let documents = await this.findMany({
+            flag_publish: true
+        });
+        if (!documents) {
+            return [];
+        }
+        let bots = [];
+        for (let i in documents) {
+            let bot = new BotVo(documents[i]);
+            bot.setStatistic(
+                documents[i].messages.length, 
+                2, 3, 4);
+            bots.push(bot);
+        }
+        return bots;
+    }
+
+    /**
+     * покупка бота
+     * @param {*} botId 
+     */
+    async buyMarketBot(botId) {
+        const result = await this.findMany({
+            _id: new ObjectID(botId)
+        });
+        if (!result) {
+            throw Error('Bot not found');
+        }
+        // @todo do something with stat or else
+        return {
+            botVo: new BotVo(result[0]),
+            userVo: this.userVo 
+        };
     }
 }
 

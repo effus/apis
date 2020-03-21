@@ -142,7 +142,7 @@ class Api100 {
                 res.send({result: true, bot: bot});
             })
             .catch((e) => {
-                console.error('updateBot fail', e);
+                console.error('setMyOwnBotPubishFlag fail', e);
                 sendError(res, e)
             });
     }
@@ -159,7 +159,7 @@ class Api100 {
                 res.send({result: true, bots: bots});
             })
             .catch((e) => {
-                console.error('getMyOwnBot fail', e);
+                console.error('getMyOwnBots fail', e);
                 sendError(res, e)
             });
     }
@@ -200,7 +200,35 @@ class Api100 {
                 res.send({result: true, bot: result.bot, updatedCount: result.updatedCount});
             })
             .catch((e) => {
-                console.error('getMyOwnBot fail', e);
+                console.error('setMyOwnBotMessages fail', e);
+                sendError(res, e)
+            });
+    }
+
+    getMarketBots(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).getMarketBots())
+            .then((result) => {
+                res.send({result: true, bots: result});
+            })
+            .catch((e) => {
+                console.error('getMarketBots fail', e);
+                sendError(res, e)
+            });
+    }
+
+    buyMarketBot(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).buyMarketBot(req.params.botId))
+            .then((result) => (new UserService()).buyMarketBot(
+                result.botVo, 
+                result.userVo
+            ))
+            .then(() => {
+                res.send({result: true});
+            })
+            .catch((e) => {
+                console.error('buyMarketBot fail', e);
                 sendError(res, e)
             });
     }
@@ -218,5 +246,7 @@ router.get('/bots/own', Api.getMyOwnBots);
 router.get('/bot/own/:botId', Api.getMyOwnBot);
 router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);
 router.post('/bot/own/:botId/publish', Api.setMyOwnBotPubishFlag);
+router.get('/bot/market', Api.getMarketBots);
+router.post('/bot/market/:botId/buy', Api.buyMarketBot);
 
 module.exports = router

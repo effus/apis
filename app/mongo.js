@@ -37,6 +37,10 @@ const getCollection = (name) => {
     });
 }
 
+/**
+ * @param {*} collection 
+ * @param {*} valueObject 
+ */
 const insertIntoCollection = async (collection, valueObject) => {
     return await new Promise((resolve, reject) => {
         Mongo.connect().then((client) => {
@@ -52,12 +56,16 @@ const insertIntoCollection = async (collection, valueObject) => {
     });
 }
 
+/**
+ * @param {*} collection 
+ * @param {*} document 
+ * @param {*} searchParams 
+ */
 const updateInCollection = async (collection, document, searchParams) => {
     const client = await Mongo.connect();
     const db = client.db(MongoConfig.db_name);
     const result = await db.collection(collection).updateOne(
         searchParams, 
-        //{$addToSet: {messages: [1,2,3]}}
         {$set: document}
     );
     console.debug('result', searchParams);
