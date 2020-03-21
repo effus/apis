@@ -52,6 +52,36 @@ class BotService {
     }
 
     /**
+     * обновление публичных свойств бота
+     * @param {*} botId 
+     * @param {*} name 
+     * @param {*} gender 
+     * @param {*} photoUrl 
+     */
+    async updateBot(botId, name, gender, photoUrl) {
+        const result = await this.findMany({
+            author: new ObjectID(this.userVo.id),
+            _id: new ObjectID(botId)
+        });
+        if (!result) {
+            throw Error('Bot not found');
+        }
+        let bot = result[0];
+        bot.name = name;
+        bot.gender = gender;
+        bot.photoUrl = photoUrl;
+        const updateResult = await updateInCollection(
+            BotsCollectonName,
+            bot,
+            {_id: new ObjectID(botId)}
+        );
+        return {
+            updatedCount: updateResult.modifiedCount,
+            bot: new BotVo(bot)
+        };
+    }
+
+    /**
      * Получение собственных ботов
      */
     async getMyOwnBots() {
@@ -60,7 +90,11 @@ class BotService {
         });
         let bots = [];
         for (let i in result) {
-            bots.push(new BotVo(result[i]));
+            let bot = new BotVo(result[i]);
+            bot.setStatistic(
+                result[i].messages ? result[i].messages.length : 0, 
+                2, 3, 4);
+            bots.push(bot);
         }
         return bots;
     }
@@ -221,6 +255,26 @@ class BotService {
                 chatItems: messageIds.length
             }
         };
+    }
+
+    /**
+     * Выставление статуса публикации бота
+     * @param {*} botId 
+     * @param {*} flag 
+     */
+    async setPublishFlag(botId, flag) {
+        let document = await this.findMany({
+            author: new ObjectID(this.userVo.id),
+            _id: new ObjectID(botId)
+        });
+        if (!document) {
+            throw Error('Bot not found');
+        }
+        await updateInCollection(
+            BotsCollectonName,
+            {flag_publish: flag},
+            {_id: new ObjectID(botId)}
+        );
     }
 }
 

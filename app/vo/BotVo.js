@@ -17,6 +17,21 @@ class BotVo {
     setMessages(messages) {
         this.messages = messages ? messages : [];
     }
+
+    /**
+     * @param {*} messageCount 
+     * @param {*} dialogsCount 
+     * @param {*} medianUserProgress 
+     * @param {*} price 
+     */
+    setStatistic(messageCount, dialogsCount, medianUserProgress, price) {
+        this.stat = {
+            messageCount: messageCount,
+            dialogsCount: dialogsCount,
+            medianUserProgress: medianUserProgress,
+            price: price
+        }
+    }
 }
 
 module.exports = {BotVo};

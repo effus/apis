@@ -103,6 +103,51 @@ class Api100 {
     }
 
     /**
+     * обновление бота
+     * @param {*} req 
+     * @param {*} res 
+     */
+    updateBot(req, res) {
+        const request = req.body;
+        if (!request || !request.id || !request.name || !request.gender) {
+            throw Error('Some request parameters is empty');
+        }
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).updateBot(
+                req.params.botId,
+                request.name,
+                request.gender,
+                request.photo
+            ))
+            .then((bot) => {
+                res.send({result: true, bot: bot});
+            })
+            .catch((e) => {
+                console.error('updateBot fail', e);
+                sendError(res, e)
+            });
+    }
+
+    setMyOwnBotPubishFlag(req, res) {
+        const request = req.body;
+        if (!request) {
+            throw Error('Some request parameters is empty');
+        }
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).setPublishFlag(
+                req.params.botId,
+                request.flag
+            ))
+            .then((bot) => {
+                res.send({result: true, bot: bot});
+            })
+            .catch((e) => {
+                console.error('updateBot fail', e);
+                sendError(res, e)
+            });
+    }
+
+    /**
      * созданные мной боты
      * @param {*} req 
      * @param {*} res 
@@ -168,8 +213,10 @@ router.get('/user/me', Api.getUserByAuthToken);
 router.put('/user/register', Api.registerBaseUser);
 router.post('/user/login', Api.getUserByEmailPassword);
 router.put('/bot', Api.createBot);
+router.post('/bot', Api.updateBot);
 router.get('/bots/own', Api.getMyOwnBots);
 router.get('/bot/own/:botId', Api.getMyOwnBot);
 router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);
+router.post('/bot/own/:botId/publish', Api.setMyOwnBotPubishFlag);
 
 module.exports = router
