@@ -7,6 +7,7 @@ const router = express.Router();
 //const crypto = require('crypto');
 const UserService = require('./services/UserService.js');
 const BotService = require('./services/BotService.js');
+const ChatService = require('./services/ChatService.js');
 
 const sendError = (res, e) => {
     res.send({result: false, message: e.message});
@@ -181,6 +182,30 @@ class Api100 {
             });
     }
 
+    getMyBots(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).getMyBots())
+            .then((bots) => {
+                res.send({result: true, bots: bots});
+            })
+            .catch((e) => {
+                console.error('getMyOwnBot fail', e);
+                sendError(res, e)
+            });
+    }
+
+    getBotStatus(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).getMyBotStatus(req.params.botId))
+            .then((bot) => {
+                res.send({result: true, bot: bot});
+            })
+            .catch((e) => {
+                console.error('getMyOwnBot fail', e);
+                sendError(res, e)
+            });
+    }
+
     /**
      * установка сообщений бота
      * @param {*} req 
@@ -220,12 +245,13 @@ class Api100 {
     buyMarketBot(req, res) {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).buyMarketBot(req.params.botId))
-            .then((result) => (new UserService()).buyMarketBot(
+            .then((result) => (new UserService()).buyBot(
                 result.botVo, 
                 result.userVo
             ))
-            .then(() => {
-                res.send({result: true});
+            .then((result) => (new ChatService(result.botVo, result.userVo)).createChat())
+            .then((result) => {
+                res.send({result: true, chat: result});
             })
             .catch((e) => {
                 console.error('buyMarketBot fail', e);
@@ -242,6 +268,8 @@ router.put('/user/register', Api.registerBaseUser);
 router.post('/user/login', Api.getUserByEmailPassword);
 router.put('/bot', Api.createBot);
 router.post('/bot', Api.updateBot);
+router.get('/bots/', Api.getMyBots);
+router.get('/bot/status/:botId', Api.getBotStatus);
 router.get('/bots/own', Api.getMyOwnBots);
 router.get('/bot/own/:botId', Api.getMyOwnBot);
 router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);

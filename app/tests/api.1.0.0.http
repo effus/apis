@@ -64,3 +64,13 @@ Content-Type: application/json;charset=UTF-8
 Authorization: token 5e6ba5bd92d0810f4e579ba0:1584731987798:ddae5712864b884a140c87faeedfbd5b1eb7e026c50be342a82b05a1c02158fb
 
 {"messages":[{"id":"32448","text":"Fsdfsd","cases":[{"id": "46395", "points": 0, "text": "First case"}],"next":[{"id": "58256", "points": 1, "goto": 96860}]}]}
+
+###
+POST http://localhost:5000/datesimapi/1.0.0/bot/market/5e763b23733d443d61256525/buy
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584857790491:004091d5ac89c558fdf8b9f14a13c12510b2a9fadf5b9554bdb61edc6a7cb6e1
+
+###
+GET http://localhost:5000/datesimapi/1.0.0/bots/
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584899591725:472ecd2e0e10905b40b2e189234e84b292a2223670db986e6edabb54f2c0c73b

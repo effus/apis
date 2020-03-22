@@ -3,6 +3,16 @@ const {getCollection, insertIntoCollection, updateInCollection} = require('../mo
 const ObjectID = require('mongodb').ObjectID;
 const {BotVo} = require('../vo/BotVo.js');
 
+/**
+ * Статусы бота
+ */
+const BotStatuses = {
+    Unavailable: 0,
+    Online: 1,
+    Offline: 2,
+    Type: 3
+};
+
 const BotsCollectonName = 'api_bots';
 
 class BotService {
@@ -105,6 +115,26 @@ class BotService {
         }
         return bots;
     }
+
+    /**
+     * Получение купленных ботов
+     */
+    async getMyBots() {
+        const botIds = Object.keys(this.userVo.bots).map(value => new ObjectID(value));
+        const result = await this.findMany({
+            _id: {$in: botIds}
+        });
+        if (!result) {
+            return [];
+        }
+        let bots = [];
+        for (let i in result) {
+            let botVo = new BotVo(result[i]);
+            botVo.setStatus(BotStatuses.Online);
+            bots.push(botVo);
+        }
+        return bots;
+    }
     
     /**
      * Получение бота
@@ -113,6 +143,23 @@ class BotService {
         let bot = new BotVo(this.getMyBot(botId));
         bot.setMessages(result[0].messages);
         return bot;
+    }
+
+    /**
+     * @param {*} botId 
+     */
+    async getMyBotStatus(botId) {
+        const botIds = Object.keys(this.userVo.bots);
+        if (!botIds.includes(botId)) {
+            throw Error('Information not available');
+        }
+        const documents = await this.findMany({
+            _id: new Object(botId)
+        });
+        if (!documents) {
+            throw Error('Bot not found');
+        }
+        return new BotVo(this.getMyBot(documents[0]));
     }
 
     /**

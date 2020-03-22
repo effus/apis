@@ -168,12 +168,20 @@ class UserService {
      */
     async buyBot(botVo, userVo) {
         let bots = userVo.bots ? userVo.bots : [];
-        bots.push(botVo.id);
-        const updated = await updateInCollection(UserCollectonName, {
-            bots: bots
-        }, userVo.id);
+        bots[botVo.id] = {};
+        const updated = await updateInCollection(
+            UserCollectonName, 
+            {
+                bots: bots
+            }, 
+            {
+                _id: new Object(userVo.id)
+            }
+        );
         return {
-            updatedCount: updated.modifiedCount
+            updatedCount: updated.modifiedCount,
+            botVo: botVo,
+            userVo: userVo
         }
     }
 }
