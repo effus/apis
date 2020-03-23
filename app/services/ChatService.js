@@ -1,7 +1,7 @@
 'use strict';
 
 const {getCollection, insertIntoCollection, updateInCollection} = require('../mongo');
-//const ObjectID = require('mongodb').ObjectID;
+const ObjectID = require('mongodb').ObjectID;
 const {ChatVo} = require('../vo/ChatVo.js');
 
 const ChatCollectonName = 'api_chats';
@@ -29,15 +29,12 @@ class ChatService {
         });
     }
 
-    /**
-     * @param {*} botId 
-     * @param {*} userId 
-     */
-    async getChat(botId, userId) {
+    async getChat() {
         const result = await this.find({
-            bot_id: new Object(botId),
-            user_id: new Object(userId)
+            bot_id: new ObjectID(this.botVo.id),
+            user_id: new ObjectID(this.userVo.id)
         });
+        console.debug('getChat', result, this.botVo.id, this.userVo.id);
         if (result !== null) {
             if (Array.isArray(result) && result.length > 1) {
                 throw Error('Something wrong: there are more than one chat');
@@ -52,7 +49,7 @@ class ChatService {
      * @param {*} userVo 
      */
     async createChat() {
-        let chatDocument = await this.getChat(this.botVo.id, this.userVo.id); 
+        let chatDocument = await this.getChat(); 
         if (chatDocument) {
             console.debug('chat exist', chatDocument);
             return new ChatVo(chatDocument);
@@ -60,7 +57,8 @@ class ChatService {
         chatDocument = {
            bot_id: new Object(this.botVo.id),
            user_id: new Object(this.userVo.id),
-           messages: []
+           messages: [],
+           gallery: []
         };
         const insertResult = await insertIntoCollection(ChatCollectonName, chatDocument);
         chatDocument._id = insertResult.insertedId;

@@ -74,3 +74,15 @@ Authorization: token 5e6ba5bd92d0810f4e579ba0:1584857790491:004091d5ac89c558fdf8
 GET http://localhost:5000/datesimapi/1.0.0/bots/
 Content-Type: application/json;charset=UTF-8
 Authorization: token 5e6ba5bd92d0810f4e579ba0:1584899591725:472ecd2e0e10905b40b2e189234e84b292a2223670db986e6edabb54f2c0c73b
+
+###
+
+GET http://localhost:5000/datesimapi/1.0.0/bot/status/5e763b23733d443d61256525
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584976287290:0c6bc02c17d8ccbbeeeb11b0edb949ea3a9e3e824e510a3c01f1ddfa5708f80e
+
+###
+
+GET http://localhost:5000/datesimapi/1.0.0/bot/chat/5e78dc748b2f861a1745ba34
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584981183638:1ec1084e21cb63008fa7289dbc08badfd3075e159231d299add16803b0268f56

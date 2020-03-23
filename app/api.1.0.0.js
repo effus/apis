@@ -206,6 +206,22 @@ class Api100 {
             });
     }
 
+    getBotChat(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).getBotAndUserVo(req.params.botId))
+            .then((result) => (new ChatService(result.botVo, result.userVo)).getChat())
+            .then((chat) => {
+                if (!chat) {
+                    throw Error('Chat not available');                    
+                }
+                res.send({result: true, messages: chat.messages});
+            })
+            .catch((e) => {
+                console.error('getMyOwnBot fail', e);
+                sendError(res, e)
+            });
+    }
+
     /**
      * установка сообщений бота
      * @param {*} req 
@@ -270,6 +286,7 @@ router.put('/bot', Api.createBot);
 router.post('/bot', Api.updateBot);
 router.get('/bots/', Api.getMyBots);
 router.get('/bot/status/:botId', Api.getBotStatus);
+router.get('/bot/chat/:botId', Api.getBotChat);
 router.get('/bots/own', Api.getMyOwnBots);
 router.get('/bot/own/:botId', Api.getMyOwnBot);
 router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);
