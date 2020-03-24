@@ -1,46 +1,8 @@
-### Get user by auth token
-http://localhost:5000/datesimapi/1.0.0/user/me
-Authorization: token 5e6a3a521969aa5a941b11af:2dd661550c57302f2f164d5c6f57163567bc159bacfd03fce4fbb2c3a30f5b83
-
-### Get user by auth token (prod)
-https://effus-apis.herokuapp.com/datesimapi/1.0.0/user/me
-Authorization: token 5e6a3de773a3d70004ca9762:51f8bfdb40c327646bbda3d7ce7b2bf975bbd6c2892b1a2d50dad7844568737e
-
-### Register new user
-PUT http://localhost:5000/datesimapi/1.0.0/user/register
-content-type: application/json
-
-{
-    "email": "test4@email.com",
-    "name": "test4",
-    "password": "abcdef"
-}
-
-### Register new user (prod)
-PUT https://effus-apis.herokuapp.com/datesimapi/1.0.0/user/register
-content-type: application/json
-
-{
-    "email": "test1@email.com",
-    "name": "test1",
-    "password": "abc1def2"
-}
-
-### Register new user
-POST http://localhost:5000/datesimapi/1.0.0/user/login
-content-type: application/json
-
-{
-    "email": "test4@email.com",
-    "password": "abcdef"
-}
-
-###
 
 POST http://localhost:5000/datesimapi/1.0.0/user/login
 Content-Type: application/json;charset=UTF-8
 
-{"email": "test4@email.com", "password": "123123123"}
+{"email": "root@test.ee", "password": "eff"}
 
 
 ###

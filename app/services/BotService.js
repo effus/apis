@@ -13,6 +13,10 @@ const BotStatuses = {
     Type: 3
 };
 
+const ReservedKeywords = [
+    ':finish:'
+];
+
 const BotsCollectonName = 'api_bots';
 
 class BotService {
@@ -229,7 +233,11 @@ class BotService {
             if (typeof next[i].points !== 'number') {
                 throw Error('Bad type message.next.points');
             }
-            if (typeof next[i].goto !== 'number') {
+            if (typeof next[i].goto === 'string') {
+                if (!ReservedKeywords.includes(next[i].goto)) {
+                    throw Error('Bad string value for message.next.goto');
+                }
+            } else if (typeof next[i].goto !== 'number') {
                 throw Error('Bad type message.next.goto');
             }
             if (next[i].points < 0) {
@@ -267,8 +275,12 @@ class BotService {
     checkNextTargets(messages, messageIds) {
         for (let i in messages) {
             for (let j in messages[i].next) {
-                if (!messageIds.includes(messages[i].next[j].id)) {
-                    throw Error('message.next.id has wrong target');
+                const nextId = messages[i].next[j].id;
+                if (ReservedKeywords.includes[nextId]) {
+                    continue;
+                }
+                if (!messageIds.includes(nextId)) {
+                    throw Error('message.next.id has wrong target: ' + nextId);
                 }
             }
         }

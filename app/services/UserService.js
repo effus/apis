@@ -155,7 +155,9 @@ class UserService {
         }
         const userId = result._id;
         result.token = this.authService.getToken();
-        await updateInCollection(UserCollectonName, result, userId);
+        await updateInCollection(UserCollectonName, result, {
+            _id: new ObjectID(userId)
+        });
         let vo = this.getUserVoByData(result);
         vo.setToken(result.token);
         return vo;
