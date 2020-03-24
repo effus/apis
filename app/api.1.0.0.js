@@ -194,6 +194,10 @@ class Api100 {
             });
     }
 
+    /**
+     * @param {*} req 
+     * @param {*} res 
+     */
     getBotStatus(req, res) {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).getMyBotStatus(req.params.botId))
@@ -206,20 +210,24 @@ class Api100 {
             });
     }
 
+    /**
+     * @param {*} req 
+     * @param {*} res 
+     */
     getBotChat(req, res) {
         new UserService().getUserVoByRequest(req)
-            .then((userVo) => (new BotService(userVo)).getBotAndUserVo(req.params.botId))
-            .then((result) => (new ChatService(result.botVo, result.userVo)).getChat())
-            .then((chat) => {
-                if (!chat) {
-                    throw Error('Chat not available');                    
-                }
-                res.send({result: true, messages: chat.messages});
+            .then((userVo) => {
+                new BotService(userVo).getMyBotStatus(req.params.botId)
+                    .then( (botVo) => new ChatService(botVo, userVo).getChat() )
+                    .then((chat) => {
+                        res.send({result: true, chat: chat});
+                    })
             })
             .catch((e) => {
-                console.error('getMyOwnBot fail', e);
+                console.error('getBotChat fail', e);
                 sendError(res, e)
             });
+            
     }
 
     /**
@@ -262,7 +270,7 @@ class Api100 {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).buyMarketBot(req.params.botId))
             .then((result) => (new UserService()).buyBot(
-                result.botVo, 
+                result.botVo,
                 result.userVo
             ))
             .then((result) => (new ChatService(result.botVo, result.userVo)).createChat())

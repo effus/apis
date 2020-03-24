@@ -13,9 +13,9 @@ const BotStatuses = {
     Type: 3
 };
 
-const ReservedKeywords = [
-    ':finish:'
-];
+const ReservedTargetWords = {
+    FINISH: ':finish:'
+};
 
 const BotsCollectonName = 'api_bots';
 
@@ -34,13 +34,13 @@ class BotService {
      */
     async findMany(params) {
         const collection = await getCollection(BotsCollectonName);
-        return await collection.find(params).toArray();
+        return collection.find(params).toArray();
     }
 
     /**
      * @param {string} botId 
      */
-    async getMyOwnBotDocument(botId) {
+    async getMyBot(botId) {
         const result = await this.findMany({
             author: new ObjectID(this.userVo.id),
             _id: new ObjectID(botId)
@@ -79,7 +79,7 @@ class BotService {
      * @param {*} photoUrl 
      */
     async updateBot(botId, name, gender, photoUrl) {
-        let bot = await this.getMyOwnBotDocument(botId);
+        let bot = this.getMyBot(botId);
         bot.name = name;
         bot.gender = gender;
         bot.photoUrl = photoUrl;
@@ -113,18 +113,6 @@ class BotService {
     }
 
     /**
-     * Получение бота
-     */
-    async getMyOwnBot(botId) {
-        const result = await this.getMyOwnBotDocument(botId);
-        let bot = new BotVo(result);
-        if (result.messages) {
-            bot.setMessages(result.messages);
-        }
-        return bot;
-    }
-
-    /**
      * Получение купленных ботов
      */
     async getMyBots() {
@@ -143,43 +131,32 @@ class BotService {
         }
         return bots;
     }
-
-    /**
-     * @param {*} botId 
-     */
-    async getMyBotDocument(botId) {
-        const documents = await this.findMany({
-            _id: new ObjectID(botId)
-        });
-        if (documents.length === 0) {
-            throw Error('Bot not found');
-        }
-        const botIds = Object.keys(this.userVo.bots);
-        if (!botIds.includes(botId)) {
-            throw Error('Bot information are not available');
-        }
-        return documents[0];
-    }
     
+    /**
+     * Получение бота
+     */
+    async getMyOwnBot(botId) {
+        let bot = new BotVo(this.getMyBot(botId));
+        bot.setMessages(result[0].messages);
+        return bot;
+    }
+
     /**
      * @param {*} botId 
      */
     async getMyBotStatus(botId) {
-        const botDocument = await this.getMyBotDocument(botId);
-        const botVo = new BotVo(botDocument);
-        botVo.setStatus(BotStatuses.Online); // @todo by chat situation
-        return botVo;
-    }
-
-    /**
-     * @param {*} botId 
-     */
-    async getBotAndUserVo(botId) {
-        const botVo = await this.getMyBotStatus(botId);
-        return {
-            botVo: botVo,
-            userVo: this.userVo
-        };
+        const botIds = Object.keys(this.userVo.bots);
+        if (!botIds.includes(botId)) {
+            throw Error('Information not available');
+        }
+        const documents = await this.findMany({
+            _id: new ObjectID(botId)
+        });
+        if (!documents) {
+            throw Error('Bot not found');
+        }
+        console.debug('getMyBotStatus', botId, documents);
+        return new BotVo(documents[0]);
     }
 
     /**
@@ -233,11 +210,7 @@ class BotService {
             if (typeof next[i].points !== 'number') {
                 throw Error('Bad type message.next.points');
             }
-            if (typeof next[i].goto === 'string') {
-                if (!ReservedKeywords.includes(next[i].goto)) {
-                    throw Error('Bad string value for message.next.goto');
-                }
-            } else if (typeof next[i].goto !== 'number') {
+            if (typeof next[i].goto !== 'string') {
                 throw Error('Bad type message.next.goto');
             }
             if (next[i].points < 0) {
@@ -275,12 +248,13 @@ class BotService {
     checkNextTargets(messages, messageIds) {
         for (let i in messages) {
             for (let j in messages[i].next) {
-                const nextId = messages[i].next[j].id;
-                if (ReservedKeywords.includes[nextId]) {
+                const targetId = messages[i].next[j].goto;
+                const reservedWords = [ReservedTargetWords.FINISH];
+                if (reservedWords.includes(targetId)) {
                     continue;
                 }
-                if (!messageIds.includes(nextId)) {
-                    throw Error('message.next.id has wrong target: ' + nextId);
+                if (!messageIds.includes(parseInt(messages[i].next[j].goto))) {
+                    throw Error('message.next.id has wrong target');
                 }
             }
         }
@@ -293,7 +267,7 @@ class BotService {
      * @param {Array} messages 
      */
     async setMyOwnBotMessages(botId, messages) {
-        let bot = await this.getMyOwnBot(botId);
+        const bot = new BotVo(this.getMyBot(botId));
         if (messages.length === 0) {
             return {
                 updatedCount: 0,
@@ -313,6 +287,7 @@ class BotService {
             {messages: messages},
             {_id: new ObjectID(botId)}
         );
+        
         bot.setMessages(messages);   
         return {
             updatedCount: updated.modifiedCount,
@@ -329,7 +304,7 @@ class BotService {
      * @param {*} flag 
      */
     async setPublishFlag(botId, flag) {
-        this.getMyBotDocument(botId);
+        this.getMyBot(botId);
         const updated = await updateInCollection(
             BotsCollectonName,
             {flag_publish: flag},
@@ -366,15 +341,17 @@ class BotService {
      * @param {*} botId 
      */
     async buyMarketBot(botId) {
-        const result = await this.findMany({
+        const documentsBot = await this.findMany({
             _id: new ObjectID(botId)
         });
-        if (!result) {
+        if (!documentsBot) {
             throw Error('Bot not found');
         }
         // @todo do something with stat or else
+        let botVo = new BotVo(documentsBot[0]); 
+        botVo.setMessages(documentsBot[0].messages);
         return {
-            botVo: new BotVo(result[0]),
+            botVo: botVo,
             userVo: this.userVo 
         };
     }

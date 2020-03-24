@@ -3,11 +3,16 @@
 const {getCollection, insertIntoCollection, updateInCollection} = require('../mongo');
 const ObjectID = require('mongodb').ObjectID;
 const {ChatVo} = require('../vo/ChatVo.js');
+const {ChatItemVo} = require('../vo/ChatItemVo.js');
 
 const ChatCollectonName = 'api_chats';
 
 class ChatService {
 
+    /**
+     * @param {BotVo} botVo 
+     * @param {UserVo} userVo 
+     */
     constructor(botVo, userVo) {
         this.botVo = botVo;
         this.userVo = userVo;
@@ -16,49 +21,57 @@ class ChatService {
     /**
      * @param {*} params 
      */
-    async find(params) {
+    async findChat(params) {
         const collection = await getCollection(ChatCollectonName);
-        return new Promise((resolve, reject) => {
-            try {
-                collection.findOne(params).then((documents) => {
-                    resolve(documents);
-                }).then(reject);
-            } catch(e) {
-                reject(e);
-            }
-        });
+        return await collection.findOne(params);
     }
 
+    /**
+     * @param {*} botId 
+     * @param {*} userId 
+     */
     async getChat() {
-        const result = await this.find({
+        if (!this.botVo || !this.userVo) {
+            throw Error('Bot or User undefined');
+        }
+        const result = await this.findChat({
             bot_id: new ObjectID(this.botVo.id),
             user_id: new ObjectID(this.userVo.id)
         });
-        console.debug('getChat', result, this.botVo.id, this.userVo.id);
+        console.debug('getChat', result, this.botVo, this.userVo.id);
         if (result !== null) {
             if (Array.isArray(result) && result.length > 1) {
                 throw Error('Something wrong: there are more than one chat');
             }
-            return result;
+            return new ChatVo(result);
         }
         return null;
     }
 
-    /**
-     * @param {*} botVo 
-     * @param {*} userVo 
-     */
     async createChat() {
-        let chatDocument = await this.getChat(); 
+        let chatDocument = await this.getChat(this.botVo.id, this.userVo.id); 
         if (chatDocument) {
-            console.debug('chat exist', chatDocument);
+            console.error('chat exist', chatDocument);
             return new ChatVo(chatDocument);
+        }
+        
+        const firstMessage = this.botVo.messages[0];
+        if (firstMessage.cases.length === 0) {
+            throw Error('No cases to start a chat');
+        }
+        let chatCases = [];
+        for (let i in firstMessage.cases) {
+            chatCases.push({
+                id: firstMessage.cases[i].id,
+                text: firstMessage.cases[i].text
+            });
         }
         chatDocument = {
            bot_id: new Object(this.botVo.id),
            user_id: new Object(this.userVo.id),
-           messages: [],
-           gallery: []
+           messages: [
+               new ChatItemVo(null, chatCases, null, null)
+           ]
         };
         const insertResult = await insertIntoCollection(ChatCollectonName, chatDocument);
         chatDocument._id = insertResult.insertedId;

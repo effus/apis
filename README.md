@@ -15,5 +15,5 @@ heroku local web
 ## watch
 
 ```bash
-nodemon --exec "heroku local" --signal SIGTERM
+nodemon --exec "heroku local web > api.log" --signal SIGTERM
 ```
