@@ -80,4 +80,4 @@ class ChatService {
     }
 }
 
-module.exports = ChatService;
+module.exports = {ChatService, ChatCollectonName};

@@ -70,4 +70,4 @@ class AuthService {
     }
 }
 
-module.exports = {AuthService, AuthPermissions};
+module.exports = {AuthService, AuthPermissions, hashSomething};

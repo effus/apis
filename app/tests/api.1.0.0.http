@@ -74,3 +74,8 @@ Authorization: token 5e6ba5bd92d0810f4e579ba0:1584857790491:004091d5ac89c558fdf8
 GET http://localhost:5000/datesimapi/1.0.0/bots/
 Content-Type: application/json;charset=UTF-8
 Authorization: token 5e6ba5bd92d0810f4e579ba0:1584899591725:472ecd2e0e10905b40b2e189234e84b292a2223670db986e6edabb54f2c0c73b
+
+###
+DELETE http://localhost:5000/datesimapi/1.0.0/secure/resetDb
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584899591725:472ecd2e0e10905b40b2e189234e84b292a2223670db986e6edabb54f2c0c73b

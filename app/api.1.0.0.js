@@ -5,9 +5,10 @@ const router = express.Router();
 //const UserVo = require('./vo/UserVo');
 //const ObjectID = require('mongodb').ObjectID;
 //const crypto = require('crypto');
-const UserService = require('./services/UserService.js');
-const BotService = require('./services/BotService.js');
-const ChatService = require('./services/ChatService.js');
+const {UserService} = require('./services/UserService.js');
+const {BotService} = require('./services/BotService.js');
+const {ChatService} = require('./services/ChatService.js');
+const {SecureService} = require('./services/SecureService.js');
 
 const sendError = (res, e) => {
     res.send({result: false, message: e.message});
@@ -282,6 +283,28 @@ class Api100 {
                 sendError(res, e)
             });
     }
+
+    secureActions(req, res) {
+        const service = new SecureService();
+        const action = req.params.action;
+        let token = null;
+        if (req.headers.authorization) {
+            token = req.headers.authorization.replace(/token/g, '').trim();
+        }
+        const allowdeMethods = ['resetDb'];
+        if (!allowdeMethods.includes(action)) {
+            return res.send({result: false, message: 'action not allowed'});
+        }
+
+        service[action](token)
+            .then((result) => {
+                res.send({result: result});
+            })
+            .catch((e) => {
+                console.error('secureActions fail', e);
+                sendError(res, e)
+            });
+    }
 };
 
 const Api = new Api100();
@@ -301,5 +324,6 @@ router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);
 router.post('/bot/own/:botId/publish', Api.setMyOwnBotPubishFlag);
 router.get('/bot/market', Api.getMarketBots);
 router.post('/bot/market/:botId/buy', Api.buyMarketBot);
+router.delete('/secure/:action', Api.secureActions);
 
 module.exports = router

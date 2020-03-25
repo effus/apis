@@ -357,4 +357,4 @@ class BotService {
     }
 }
 
-module.exports = BotService;
+module.exports = {BotService, BotsCollectonName};

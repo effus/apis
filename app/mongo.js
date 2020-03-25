@@ -1,13 +1,9 @@
 const MongoClient = require('mongodb').MongoClient;
 const MongoConfig = require('./../mongo.json')['production'];
 const mongoParams = {
-    server: {
-        socketOptions: {
-            connectTimeoutMS: 5000
-        }
-    }
+    useUnifiedTopology: true,
+    connectTimeoutMS: 5000
 };
-const ObjectID = require('mongodb').ObjectID;
 
 class Db {
     constructor() {
@@ -89,4 +85,26 @@ const saveDocumentInCollection = async (collection, document) => {
     });
 }
 
-module.exports = {Mongo, getCollection, insertIntoCollection, updateInCollection, saveDocumentInCollection};
+const truncateCollection = async (collection) => {
+        const connect = await Mongo.connect();
+        const db = connect.db(MongoConfig.db_name);
+        return await db.collection(collection).deleteMany({});
+        /*return await new Promise((resolve, reject) => {
+            db.collection(collection).deleteMany({}, (err, res) => {
+                if (err) {
+                    console.error('truncateCollection', err);
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });*/
+};
+
+module.exports = {
+    Mongo, 
+    getCollection, 
+    insertIntoCollection, 
+    updateInCollection, 
+    saveDocumentInCollection,
+    truncateCollection
+};
