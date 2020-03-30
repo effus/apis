@@ -136,8 +136,10 @@ class BotService {
      * Получение бота
      */
     async getMyOwnBot(botId) {
-        let bot = new BotVo(this.getMyBot(botId));
-        bot.setMessages(result[0].messages);
+        const result = await this.getMyBot(botId);
+        console.debug('mybot', result);
+        let bot = new BotVo(result);
+        bot.setMessages(result.messages);
         return bot;
     }
 
