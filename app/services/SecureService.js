@@ -11,7 +11,7 @@ class SecureService {
 
     async resetDb(token) {
         const dt = new Date();
-        const timeStr = dt.getFullYear() + dt.getMonth() + dt.getDate() + dt.getHours();
+        const timeStr = String(dt.getFullYear()) + dt.getMonth() + dt.getDate();
         const control = hashSomething('SecureService.resetDb' + timeStr);
         if (token !== control) {
             console.error('SecureService.resetDb', timeStr, control, token);
