@@ -61,9 +61,10 @@ class BotService {
         let object = {
             author: this.userVo.id,
             flag_publish: false,
+            version: 0,
             name: name,
             gender: gender,
-            photoUrl: photoUrl,
+            photo_url: photoUrl,
             messages: []
         };
         const insertResult = await insertIntoCollection(BotsCollectonName, object);
@@ -79,10 +80,10 @@ class BotService {
      * @param {*} photoUrl 
      */
     async updateBot(botId, name, gender, photoUrl) {
-        let bot = this.getMyBot(botId);
+        let bot = await this.getMyBot(botId);
         bot.name = name;
         bot.gender = gender;
-        bot.photoUrl = photoUrl;
+        bot.photo_url = photoUrl;
         const updateResult = await updateInCollection(
             BotsCollectonName,
             bot,
@@ -92,6 +93,63 @@ class BotService {
             updatedCount: updateResult.modifiedCount,
             bot: new BotVo(bot)
         };
+    }
+
+    
+    /**
+     * Выставление статуса публикации бота
+     * @param {*} botId 
+     * @param {*} flag 
+     */
+    async setPublishFlag(botId, flag) {
+        let bot = await this.getMyBot(botId);
+        console.debug('setPublishFlag', bot);
+        let updated = null;
+        if (flag === false) {
+            let object = {
+                author: this.userVo.id,
+                flag_publish: false,
+                version: (bot.version ? bot.version : 0) + 1,
+                name: bot.name,
+                gender: bot.gender,
+                photo_url: bot.photo_url,
+                messages: bot.messages
+            };
+            updated = await updateInCollection(
+                BotsCollectonName,
+                { 
+                    flag_publish: false,
+                    author: null
+                },
+                {_id: new ObjectID(botId)}
+            );
+            
+            await insertIntoCollection(BotsCollectonName, object);
+        } else {
+            updated = await updateInCollection(
+                BotsCollectonName,
+                {flag_publish: true},
+                {_id: new ObjectID(botId)}
+            );    
+        }
+        return {
+            updatedCount: updated.modifiedCount
+        };
+    }
+
+    /**
+     * удаление бота
+     * @param {*} botId 
+     */
+    async deleteOwnBot(botId) {
+        let bot = await this.getMyBot(botId);
+        bot.author = null;
+        bot.flag_publish = false;
+        await updateInCollection(
+            BotsCollectonName,
+            bot,
+            {_id: new ObjectID(botId)}
+        );
     }
 
     /**
@@ -269,7 +327,7 @@ class BotService {
      * @param {Array} messages 
      */
     async setMyOwnBotMessages(botId, messages) {
-        const bot = new BotVo(this.getMyBot(botId));
+        const bot = new BotVo(await this.getMyBot(botId));
         if (messages.length === 0) {
             return {
                 updatedCount: 0,
@@ -297,23 +355,6 @@ class BotService {
             stat: {
                 chatItems: messageIds.length
             }
-        };
-    }
-
-    /**
-     * Выставление статуса публикации бота
-     * @param {*} botId 
-     * @param {*} flag 
-     */
-    async setPublishFlag(botId, flag) {
-        this.getMyBot(botId);
-        const updated = await updateInCollection(
-            BotsCollectonName,
-            {flag_publish: flag},
-            {_id: new ObjectID(botId)}
-        );
-        return {
-            updatedCount: updated.modifiedCount
         };
     }
 
