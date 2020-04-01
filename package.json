@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "js.github.apis",
   "version": "1.0.0",
@@ -34,3 +35,41 @@
     "tape": "^4.7.0"
   }
 }
+=======
+{
+  "name": "js.github.apis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon --exec \"heroku local web > api.log\" --signal SIGTERM"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effus/apis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/effus/apis/issues"
+  },
+  "homepage": "https://github.com/effus/apis#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "1.0.1",
+    "ejs": "^2.5.6",
+    "express": "^4.15.2",
+    "mongodb": "3.5.3",
+    "vue": "^2.6.11"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "nodemon": "^2.0.2",
+    "request": "^2.81.0",
+    "tape": "^4.7.0"
+  }
+}
+>>>>>>> 093debf08f87f7e066ce36947edc8fb82f019e9e
