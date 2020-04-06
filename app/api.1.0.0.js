@@ -114,6 +114,7 @@ class Api100 {
         if (!request || !request.id || !request.name || !request.gender) {
             throw Error('Some request parameters is empty');
         }
+        //@todo: обновлять можно только есть нет созданных чатов
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).updateBot(
                 req.params.botId,
@@ -130,6 +131,26 @@ class Api100 {
             });
     }
 
+    /**
+     * удаление бота
+     */
+    deleteOwnBot(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new BotService(userVo)).deleteOwnBot(req.params.botId))
+            .then(() => {
+                res.send({result: true});
+            })
+            .catch((e) => {
+                console.error('deleteOwnBot fail', e);
+                sendError(res, e)
+            });
+    }
+
+    /**
+     * публикация и снятие
+     * @param {*} req 
+     * @param {*} res 
+     */
     setMyOwnBotPubishFlag(req, res) {
         const request = req.body;
         if (!request) {
@@ -183,6 +204,11 @@ class Api100 {
             });
     }
 
+    /**
+     * список полученных ботов
+     * @param {*} req 
+     * @param {*} res 
+     */
     getMyBots(req, res) {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).getMyBots())
@@ -228,7 +254,25 @@ class Api100 {
                 console.error('getBotChat fail', e);
                 sendError(res, e)
             });
-            
+    }
+
+    setUserChatAnswer(req, res) {
+        const body = req.body;
+        if (!body) {
+            throw Error('Some request parameters is empty');
+        }
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => {
+                new BotService(userVo).getMyBotStatus(req.params.botId)
+                    .then( (botVo) => new ChatService(botVo, userVo).setAnswer(body.caseId) )
+                    .then((chat) => {
+                        res.send({result: true, chat: chat});
+                    })
+            })
+            .catch((e) => {
+                console.error('getBotChat fail', e);
+                sendError(res, e)
+            });
     }
 
     /**
@@ -241,6 +285,7 @@ class Api100 {
         if (!body) {
             throw Error('Some request parameters is empty');
         }
+        //@todo: обновлять можно только есть нет созданных чатов
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).setMyOwnBotMessages(
                 req.params.botId,
@@ -255,6 +300,11 @@ class Api100 {
             });
     }
 
+    /**
+     * список опубликованных ботов
+     * @param {*} req 
+     * @param {*} res 
+     */
     getMarketBots(req, res) {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).getMarketBots())
@@ -267,6 +317,11 @@ class Api100 {
             });
     }
 
+    /**
+     * получение бота
+     * @param {*} req 
+     * @param {*} res 
+     */
     buyMarketBot(req, res) {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new BotService(userVo)).buyMarketBot(req.params.botId))
@@ -315,9 +370,11 @@ router.put('/user/register', Api.registerBaseUser);
 router.post('/user/login', Api.getUserByEmailPassword);
 router.put('/bot', Api.createBot);
 router.post('/bot', Api.updateBot);
+router.delete('/bot/:botId', Api.deleteOwnBot);
 router.get('/bots/', Api.getMyBots);
 router.get('/bot/status/:botId', Api.getBotStatus);
 router.get('/bot/chat/:botId', Api.getBotChat);
+router.post('/bot/chat/:botId', Api.setUserChatAnswer);
 router.get('/bots/own', Api.getMyOwnBots);
 router.get('/bot/own/:botId', Api.getMyOwnBot);
 router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);

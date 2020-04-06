@@ -76,7 +76,13 @@ Content-Type: application/json;charset=UTF-8
 Authorization: token 5e6ba5bd92d0810f4e579ba0:1584899591725:472ecd2e0e10905b40b2e189234e84b292a2223670db986e6edabb54f2c0c73b
 
 ###
-
 DELETE http://localhost:5000/datesimapi/1.0.0/secure/resetDb
 Content-Type: application/json;charset=UTF-8
-Authorization: token 0a153794a72c25d470ec148bc0e1a80d14f28c27fdeb5543c41cfaec7f88750a
+Authorization: token 5e6ba5bd92d0810f4e579ba0:1584899591725:472ecd2e0e10905b40b2e189234e84b292a2223670db986e6edabb54f2c0c73b
+
+###
+POST http://localhost:5000/datesimapi/1.0.0/bot/own/5e81f8b5044bf9157769063c/messages
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e81efb5440f3f1241968032:1585760771072:9187692726a16451a9b3daa39940e73f2079381b48dd58c2d2d57bed4f859e6a
+
+{"messages":[{"id":81306,"text":"?","cases":[{"id":82386,"points":2,"text":"Hi!"},{"id":5017,"points":4,"text":"Shit!"}],"next":[{"id":81307,"points":0,"goto":"86194"},{"id":24345,"points":4,"goto":"10090"}]},{"id":86194,"text":"Hey!","cases":[],"next":[{"id":86194,"points":0,"goto":":finish:"}]},{"id":10090,"text":"Yea.. Its funny","cases":[],"next":[{"id":10090,"points":0,"goto":":finish:"}]}]}

@@ -86,18 +86,15 @@ const saveDocumentInCollection = async (collection, document) => {
 }
 
 const truncateCollection = async (collection) => {
-        const connect = await Mongo.connect();
-        const db = connect.db(MongoConfig.db_name);
-        return await db.collection(collection).deleteMany({});
-        /*return await new Promise((resolve, reject) => {
-            db.collection(collection).deleteMany({}, (err, res) => {
-                if (err) {
-                    console.error('truncateCollection', err);
-                    reject(err);
-                }
-                resolve(res);
-            });
-        });*/
+    const connect = await Mongo.connect();
+    const db = connect.db(MongoConfig.db_name);
+    return await db.collection(collection).deleteMany({});
+};
+
+const deleteInCollection = async (collection, searchParams) => {
+    const connect = await Mongo.connect();
+    const db = connect.db(MongoConfig.db_name);
+    return await db.collection(collection).deleteMany(searchParams);
 };
 
 module.exports = {
@@ -105,6 +102,7 @@ module.exports = {
     getCollection, 
     insertIntoCollection, 
     updateInCollection, 
+    deleteInCollection,
     saveDocumentInCollection,
     truncateCollection
 };
