@@ -110,6 +110,7 @@ class BotService {
                 author: this.userVo.id,
                 flag_publish: false,
                 version: (bot.version ? bot.version : 0) + 1,
+                origin_id: new ObjectID(botId),
                 name: bot.name,
                 gender: bot.gender,
                 photo_url: bot.photo_url,
@@ -164,7 +165,7 @@ class BotService {
             let bot = new BotVo(result[i]);
             bot.setStatistic(
                 result[i].messages ? result[i].messages.length : 0, 
-                2, 3, 4);
+                2, 3, 4); // @todo
             bots.push(bot);
         }
         return bots;
@@ -184,6 +185,7 @@ class BotService {
         let bots = [];
         for (let i in result) {
             let botVo = new BotVo(result[i]);
+            //@todo check status
             botVo.setStatus(BotStatuses.Online);
             bots.push(botVo);
         }
@@ -195,7 +197,6 @@ class BotService {
      */
     async getMyOwnBot(botId) {
         const result = await this.getMyBot(botId);
-        console.debug('mybot', result);
         let bot = new BotVo(result);
         bot.setMessages(result.messages);
         return bot;
@@ -215,8 +216,9 @@ class BotService {
         if (!documents) {
             throw Error('Bot not found');
         }
-        console.debug('getMyBotStatus', botId, documents);
-        return new BotVo(documents[0]);
+        let botVo = new BotVo(documents[0]);
+        botVo.setStatus(BotStatuses.Online);
+        return botVo;
     }
 
     /**
@@ -373,7 +375,14 @@ class BotService {
             let bot = new BotVo(documents[i]);
             bot.setStatistic(
                 documents[i].messages.length, 
-                2, 3, 4);
+                2, 3, 4 //@todo
+            ); 
+            if (typeof this.userVo.bots[bot.id] !== 'undefined') {
+                bot.setMarketProperties(true);
+            } else {
+                console.debug('includes', this.userVo.bots, bot.id);
+                bot.setMarketProperties(false);
+            }
             bots.push(bot);
         }
         return bots;

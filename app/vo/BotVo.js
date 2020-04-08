@@ -34,6 +34,19 @@ class BotVo {
     }
 
     /**
+     * @param {*} isPurchased 
+     */
+    setMarketProperties(isPurchased) {
+        this.market = {
+            isPurchased: isPurchased
+        };
+    }
+
+    /**
+     * 0 - бот недоступен
+     * 1 - бот онлайн
+     * 2 - бот оффлайн
+     * 3 - бот пишет сообщение
      * @param {number} status 
      */
     setStatus(status) {

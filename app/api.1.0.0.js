@@ -254,7 +254,25 @@ class Api100 {
                 console.error('getBotChat fail', e);
                 sendError(res, e)
             });
-            
+    }
+
+    setUserChatAnswer(req, res) {
+        const body = req.body;
+        if (!body) {
+            throw Error('Some request parameters is empty');
+        }
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => {
+                new BotService(userVo).getMyBotStatus(req.params.botId)
+                    .then( (botVo) => new ChatService(botVo, userVo).setAnswer(body.caseId) )
+                    .then((chat) => {
+                        res.send({result: true, chat: chat});
+                    })
+            })
+            .catch((e) => {
+                console.error('getBotChat fail', e);
+                sendError(res, e)
+            });
     }
 
     /**
@@ -356,6 +374,7 @@ router.delete('/bot/:botId', Api.deleteOwnBot);
 router.get('/bots/', Api.getMyBots);
 router.get('/bot/status/:botId', Api.getBotStatus);
 router.get('/bot/chat/:botId', Api.getBotChat);
+router.post('/bot/chat/:botId', Api.setUserChatAnswer);
 router.get('/bots/own', Api.getMyOwnBots);
 router.get('/bot/own/:botId', Api.getMyOwnBot);
 router.post('/bot/own/:botId/messages', Api.setMyOwnBotMessages);
