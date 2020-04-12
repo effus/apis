@@ -86,3 +86,18 @@ Content-Type: application/json;charset=UTF-8
 Authorization: token 5e81efb5440f3f1241968032:1585760771072:9187692726a16451a9b3daa39940e73f2079381b48dd58c2d2d57bed4f859e6a
 
 {"messages":[{"id":81306,"text":"?","cases":[{"id":82386,"points":2,"text":"Hi!"},{"id":5017,"points":4,"text":"Shit!"}],"next":[{"id":81307,"points":0,"goto":"86194"},{"id":24345,"points":4,"goto":"10090"}]},{"id":86194,"text":"Hey!","cases":[],"next":[{"id":86194,"points":0,"goto":":finish:"}]},{"id":10090,"text":"Yea.. Its funny","cases":[],"next":[{"id":10090,"points":0,"goto":":finish:"}]}]}
+
+
+### 
+
+GET http://localhost:5000/datesimapi/1.0.0/bot/chat/5e85dfdf360b7818f25c65b4
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e85df94360b7818f25c65b3:1586345990438:25d25f67588412f7eab9d05825c8fcad06accaff7fe172633426c2ddaf7188e1
+
+###
+
+POST http://localhost:5000/datesimapi/1.0.0/bot/chat/5e85dfdf360b7818f25c65b4
+Content-Type: application/json;charset=UTF-8
+Authorization: token 5e85df94360b7818f25c65b3:1586345990438:25d25f67588412f7eab9d05825c8fcad06accaff7fe172633426c2ddaf7188e1
+
+{"caseId":34915,"attach":null}

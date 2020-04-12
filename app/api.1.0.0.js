@@ -263,7 +263,7 @@ class Api100 {
         }
         new UserService().getUserVoByRequest(req)
             .then((userVo) => {
-                new BotService(userVo).getMyBotStatus(req.params.botId)
+                new BotService(userVo).getMyBotMessages(req.params.botId)
                     .then( (botVo) => new ChatService(botVo, userVo).setAnswer(body.caseId) )
                     .then((chat) => {
                         res.send({result: true, chat: chat});
