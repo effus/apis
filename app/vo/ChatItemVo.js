@@ -1,8 +1,9 @@
 'use strict';
 
 class ChatItemVo {
-    constructor(reply, cases, selected, sendAt) {
+    constructor(reply, messageId, cases, selected, sendAt) {
         this.id = new Date().getTime();
+        this.messageId = messageId;
         this.reply = reply;
         this.cases = cases;
         this.selected = selected;

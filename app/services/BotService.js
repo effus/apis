@@ -202,10 +202,7 @@ class BotService {
         return bot;
     }
 
-    /**
-     * @param {*} botId 
-     */
-    async getMyBotStatus(botId) {
+    async getMyBotDocument(botId) {
         const botIds = Object.keys(this.userVo.bots);
         if (!botIds.includes(botId)) {
             throw Error('Information not available');
@@ -216,8 +213,26 @@ class BotService {
         if (!documents) {
             throw Error('Bot not found');
         }
-        let botVo = new BotVo(documents[0]);
-        botVo.setStatus(BotStatuses.Online);
+        return documents[0];
+    }
+
+    /**
+     * @param {*} botId 
+     */
+    async getMyBotStatus(botId) {
+        const document = await this.getMyBotDocument(botId);
+        let botVo = new BotVo(document);
+        botVo.setStatus(BotStatuses.Online); // @todo from chat
+        return botVo;
+    }
+
+    /**
+     * @param {*} botId 
+     */
+    async getMyBotMessages(botId) {
+        const document = await this.getMyBotDocument(botId);
+        let botVo = new BotVo(document);
+        botVo.setMessages(document.messages);
         return botVo;
     }
 

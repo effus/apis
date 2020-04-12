@@ -27,8 +27,7 @@ class ChatService {
     }
 
     /**
-     * @param {*} botId 
-     * @param {*} userId 
+     * @return {ChatVo}
      */
     async getChat() {
         if (!this.botVo || !this.userVo) {
@@ -73,10 +72,10 @@ class ChatService {
            bot_id: new Object(this.botVo.id),
            user_id: new Object(this.userVo.id),
            messages: [
-               new ChatItemVo(null, chatCases, null, null)
+               new ChatItemVo(null, firstMessage.id, chatCases, null, null)
            ],
            points: 0,
-           botStatus: 0
+           status: 0
         };
         const insertResult = await insertIntoCollection(ChatCollectonName, chatDocument);
         chatDocument._id = insertResult.insertedId;
@@ -87,11 +86,60 @@ class ChatService {
      * @param {*} caseId 
      */
     async setAnswer(caseId) {
-        let chatDocument = await this.getChat(this.botVo.id, this.userVo.id); 
-        if (!chatDocument) {
+        console.debug('setAnswer set case', caseId);
+        console.debug('setAnswer bot.messages', this.botVo.messages);
+        let chatVo = await this.getChat(this.botVo.id, this.userVo.id); 
+        if (!chatVo) {
             console.error('setAnswer', 'chat not found');
             throw Error('Chat not found');
         }
+        const chatLastMessage = chatVo.messages[chatVo.messages.length - 1];
+        if (!chatLastMessage.selected) {
+            const botMessageId = chatLastMessage.messageId;
+            let botMessage = null;
+            for (let i in this.botVo.messages) {
+                if (this.botVo.messages[i].id === botMessageId) {
+                    botMessage = this.botVo.messages[i];
+                    break;
+                }
+            }
+            if (botMessage === null) {
+                console.error('setAnswer', 'bot message not found');
+                throw Error('Message not found');
+            }
+            if (!botMessage.cases) {
+                console.error('setAnswer', 'bot message cases is empty');
+                throw Error('Message cases is empty');
+            }
+            let messageCase = null;
+            for (let i in botMessage.cases) {
+                if (botMessage.cases[i].id === caseId) {
+                    messageCase = botMessage.cases[i];
+                }
+            }
+            if (messageCase === null) {
+                console.error('setAnswer', 'bot message cases not found');
+                throw Error('Message case not found');
+            }
+            chatVo.points += messageCase.points;
+            //chatLastMessage.selected = caseId;
+            //this.botVo.messages[i] = chatLastMessage;
+            //@todo set selected + set points
+        }
+        if (!botMessage.next) {
+            console.error('setAnswer', 'bot message next is empty');
+            throw Error('Message next is empty');
+        }
+        let next = null;
+        let maxPoints = 0;
+        for (let i in botMessage.next) {
+            if (botMessage.next[i].points >= maxPoints && botMessage.next[i].points <= chatVo.points) {
+                next = botMessage.next[i];
+                maxPoints = botMessage.next[i].points;
+            }
+        }
+        console.debug('next', chatVo.points, next);
+
         //@todo
         //1. найти последнее сообщение
         //2. проверить: что не отвечено, что существует вариант ответа
@@ -100,7 +148,7 @@ class ChatService {
         //5. определить и установить следующее сообщение
         //6. определить установить статус чата
 
-
+        
     }
 }
 
