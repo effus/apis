@@ -224,7 +224,6 @@ class ChatService {
 
         
     }
-
 }
 
 module.exports = {ChatService, ChatCollectonName, ChatStatuses};

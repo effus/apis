@@ -7,7 +7,7 @@ const router = express.Router();
 //const crypto = require('crypto');
 const {UserService} = require('./services/UserService.js');
 const {BotService} = require('./services/BotService.js');
-const {ChatService} = require('./services/ChatService.js');
+const {ChatService, ChatStatuses} = require('./services/ChatService.js');
 const {SecureService} = require('./services/SecureService.js');
 
 const sendError = (res, e) => {
@@ -210,8 +210,22 @@ class Api100 {
      * @param {*} res 
      */
     getMyBots(req, res) {
+
+        const setChatStatusToAllBots = async (userVo) => {
+            let bots = await (new BotService(userVo)).getMyBots();
+            for(let i in bots) {
+                const chat = await (new ChatService(bots[i], userVo)).getChat();
+                if (chat) {
+                    bots[i].setStatus(chat.status);
+                } else {
+                    bots[i].setStatus(ChatStatuses.Error);
+                }
+            }
+            return bots;
+        };
+
         new UserService().getUserVoByRequest(req)
-            .then((userVo) => (new BotService(userVo)).getMyBots())
+            .then((userVo) => setChatStatusToAllBots(userVo))
             .then((bots) => {
                 res.send({result: true, bots: bots});
             })
@@ -226,12 +240,20 @@ class Api100 {
      * @param {*} res 
      */
     getBotStatus(req, res) {
+
+        const getBotAndChatStatus = async (userVo) => {
+            const botVo = await (new BotService(userVo)).getMyBotVo(req.params.botId);
+            const chatVo = await (new ChatService(botVo, userVo)).getChat();
+            botVo.setStatus(chatVo.status);
+            return botVo;
+        };
+
         new UserService().getUserVoByRequest(req)
-            .then((userVo) => {
-                const botVo = await (new BotService(userVo)).getMyBot(req.params.botId);
-                const chatVo = await (new ChatService(botVo, userVo)).getChat();
-                botVo.setStatus(chatVo.status);
-                res.send({result: true, bot: bot});
+            .then((userVo) => getBotAndChatStatus(userVo))
+            .then((botVo) => {
+                delete botVo.flagPublish;
+                delete botVo.id;
+                res.send({result: true, bot: botVo});
             })
             .catch((e) => {
                 console.error('getMyOwnBot fail', e);
@@ -244,13 +266,27 @@ class Api100 {
      * @param {*} res 
      */
     getBotChat(req, res) {
+
+        const getChat = async (userVo) => {
+            const botVo = await (new BotService(userVo)).getMyBotMessages(req.params.botId);
+            const chatVo = await (new ChatService(botVo, userVo)).getChat();
+            let cases = [];
+            if (chatVo.status === ChatStatuses.WaitUserReply) {
+                const lastMessageId = chatVo.messages[chatVo.messages.length - 1].messageId;
+                const message = await (new BotService(userVo)).getBotMessageById(req.params.botId, lastMessageId);
+                cases = message.cases;
+            }
+            return {cases,chatVo};
+        };
+
         new UserService().getUserVoByRequest(req)
-            .then((userVo) => {
-                new BotService(userVo).getMyBot(req.params.botId)
-                    .then( (botVo) => new ChatService(botVo, userVo).getChat() )
-                    .then((chatVo) => {
-                        res.send({result: true, chat: chatVo});
-                    })
+            .then((userVo) => getChat(userVo))
+            .then((mix) => {
+                res.send({
+                    result: true, 
+                    chat: mix.chatVo,
+                    cases: mix.cases
+                });
             })
             .catch((e) => {
                 console.error('getBotChat fail', e);

@@ -212,11 +212,36 @@ class BotService {
     /**
      * @param {*} botId 
      */
+    async getMyBotVo(botId) {
+        const document = await this.getMyBotDocument(botId);
+        return new BotVo(document);
+    }
+
+    /**
+     * @param {*} botId 
+     */
     async getMyBotMessages(botId) {
         const document = await this.getMyBotDocument(botId);
         let botVo = new BotVo(document);
         botVo.setMessages(document.messages);
         return botVo;
+    }
+
+    /**
+     * @param {Number} botId 
+     * @param {Number} messageId 
+     */
+    async getBotMessageById(botId, messageId) {
+        const botVo = await this.getMyBotMessages(botId);
+        if (!botVo.messages) {
+            throw Error('No messages for bot');
+        }
+        for (let i in botVo.messages) {
+            if (botVo.messages[i].id === messageId) {
+                return botVo.messages[i];
+            }
+        }
+        throw Error('Message not found');
     }
 
     /**

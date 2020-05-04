@@ -29,6 +29,10 @@ class UserService {
         return userVo;
     }
 
+    /**
+     * получение данных о пользователе по запросу
+     * @param {*} req 
+     */
     async getUserVoByRequest(req) {
         let token = '';
         if (req.headers.authorization) {
@@ -37,7 +41,9 @@ class UserService {
         if (!token) {
             throw Error('Bad authorization token');
         }
-        return await this.getUserByAuthToken(token);
+        const userVo = await this.getUserByAuthToken(token);
+        console.debug('getUserVoByRequest', token, userVo);
+        return userVo;
     }
 
     /**
@@ -52,7 +58,6 @@ class UserService {
                     if (err) {
                         return reject(err);
                     }
-                    console.debug('findUser', user);
                     resolve(user);
                 });
             } catch(e) {
