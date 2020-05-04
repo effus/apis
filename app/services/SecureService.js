@@ -34,13 +34,24 @@ class SecureService {
         await truncateCollection(ChatCollectonName);
     }
 
-    async resetDialogs(token) {
-        this.checkSecureToken('SecureService.resetDialogs', token);
+    async resetBotMessages(token) {
+        this.checkSecureToken('SecureService.resetBotMessages', token);
         await updateInCollection(
             BotsCollectonName,
             { 
                 flag_publish: false,
                 messages: []
+            },
+            {}
+        );
+    }
+
+    async resetAddedBots(token) {
+        this.checkSecureToken('SecureService.resetAddedBots', token);
+        await updateInCollection(
+            UserCollectonName,
+            { 
+                bots: {}
             },
             {}
         );

@@ -362,7 +362,13 @@ class Api100 {
             console.debug('auth', req.headers.authorization);
             token = req.headers.authorization.replace(/token/g, '').trim();
         }
-        const allowdeMethods = ['resetDb', 'resetChats', 'resetDialogs', 'resetBots'];
+        const allowdeMethods = [
+            'resetDb',  // все коллекции
+            'resetChats', // только api_chats
+            'resetBotMessages', // api_bots.messages
+            'resetBots', // api_bots 
+            'resetAddedBots' // api_users.bots
+        ];
         if (!allowdeMethods.includes(action)) {
             return res.send({result: false, message: 'action not allowed'});
         }
