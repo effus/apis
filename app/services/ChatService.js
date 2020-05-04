@@ -7,6 +7,17 @@ const {ChatItemVo} = require('../vo/ChatItemVo.js');
 
 const ChatCollectonName = 'api_chats';
 
+
+/**
+ * Статусы бота (на самом деле - чата)
+ */
+const ChatStatuses = {
+    Error: -2,
+    ChatFinished: -1,
+    WaitUserReply: 1, // expecting user answer
+    WaitBotReply: 2 // last message reply.sendAt > current time 
+};
+
 class ChatService {
 
     /**
@@ -37,7 +48,6 @@ class ChatService {
             bot_id: new ObjectID(this.botVo.id),
             user_id: new ObjectID(this.userVo.id)
         });
-        console.debug('getChat', result);
         if (result !== null) {
             if (Array.isArray(result) && result.length > 1) {
                 throw Error('Something wrong: there are more than one chat');
@@ -58,24 +68,14 @@ class ChatService {
         }
         
         const firstMessage = this.botVo.messages[0];
-        if (firstMessage.cases.length === 0) {
-            throw Error('No cases to start a chat');
-        }
-        let chatCases = [];
-        for (let i in firstMessage.cases) {
-            chatCases.push({
-                id: firstMessage.cases[i].id,
-                text: firstMessage.cases[i].text
-            });
-        }
         chatDocument = {
            bot_id: new Object(this.botVo.id),
            user_id: new Object(this.userVo.id),
            messages: [
-               new ChatItemVo(null, firstMessage.id, chatCases, null, null)
+               new ChatItemVo(null, firstMessage.id, 0)
            ],
            points: 0,
-           status: 0
+           status: ChatStatuses.WaitUserReply
         };
         const insertResult = await insertIntoCollection(ChatCollectonName, chatDocument);
         chatDocument._id = insertResult.insertedId;
@@ -83,62 +83,136 @@ class ChatService {
     }
 
     /**
+     * @param {*} messageId 
+     * @return {{ index: Number, message: {*} }}
+     */
+    getBotMessageById(messageId) {
+        for (let i in this.botVo.messages) {
+            if (this.botVo.messages[i].id === messageId) {
+                return {
+                    index: i, 
+                    message: this.botVo.messages[i]
+                };
+            }
+        }
+        console.error('getBotMessageById', 'bot message not found', messageId);
+        throw Error('Message not found');
+    }
+
+    /**
+     * 
+     * @param {*} messageId 
+     * @param {*} caseId 
+     */
+    getMessageCase(messageId, caseId) {
+        const {message} = this.getBotMessageById(messageId);
+        for (let i in message.cases) {
+            if (message.cases[i].id === caseId) {
+                return message.cases[i];
+            }
+        }
+        console.error('getMessageCase', 'bot message cases not found', messageId, caseId);
+        throw Error('Message case not found');
+    }
+
+    
+    /**
+     * @param {*} botMessage 
+     * @param {*} chatPoints 
+     */
+    getFirstAvailableAnswer(botMessage, chatPoints)
+    {
+        if (!botMessage.next) {
+            console.error('getFirstAvailableAnswer', 'bot message next is empty');
+            return null;
+        }
+        function compare(a, b) {
+            if (a.points > b.points) return -1;
+            if (b.points > a.points) return 1;
+            return 0;
+        }
+        const sorted = botMessage.next.slice().sort(compare);
+        for (let i in sorted) {
+            if (sorted[i].points <= chatPoints) {
+                return sorted[i];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 1 message: reply is empty, user choose case, create next message
+     * 2 message: reply is answer for user's prev. message case
+     * ...
+     * 10 message: next goto is :finish:, no new messages, status is off
+     * 
      * @param {*} caseId 
      */
     async setAnswer(caseId) {
-        console.debug('setAnswer set case', caseId);
-        console.debug('setAnswer bot.messages', this.botVo.messages);
         let chatVo = await this.getChat(this.botVo.id, this.userVo.id); 
         if (!chatVo) {
             console.error('setAnswer', 'chat not found');
             throw Error('Chat not found');
         }
         const chatLastMessage = chatVo.messages[chatVo.messages.length - 1];
+        const {message} = this.getBotMessageById(chatLastMessage.messageId);
         if (!chatLastMessage.selected) {
-            const botMessageId = chatLastMessage.messageId;
-            let botMessage = null;
-            for (let i in this.botVo.messages) {
-                if (this.botVo.messages[i].id === botMessageId) {
-                    botMessage = this.botVo.messages[i];
-                    break;
-                }
-            }
-            if (botMessage === null) {
-                console.error('setAnswer', 'bot message not found');
-                throw Error('Message not found');
-            }
-            if (!botMessage.cases) {
-                console.error('setAnswer', 'bot message cases is empty');
-                throw Error('Message cases is empty');
-            }
-            let messageCase = null;
-            for (let i in botMessage.cases) {
-                if (botMessage.cases[i].id === caseId) {
-                    messageCase = botMessage.cases[i];
-                }
-            }
-            if (messageCase === null) {
-                console.error('setAnswer', 'bot message cases not found');
-                throw Error('Message case not found');
-            }
+            const messageCase = this.getMessageCase(
+                chatLastMessage.messageId,
+                caseId
+            );
             chatVo.points += messageCase.points;
-            //chatLastMessage.selected = caseId;
-            //this.botVo.messages[i] = chatLastMessage;
-            //@todo set selected + set points
+            chatVo.messages[chatVo.messages.length-1].selected = caseId;
+            chatVo.messages[chatVo.messages.length-1].sendAt = new Date();
+            chatVo.messages[chatVo.messages.length-1].points = messageCase.points;
         }
-        if (!botMessage.next) {
-            console.error('setAnswer', 'bot message next is empty');
-            throw Error('Message next is empty');
+        
+        const answer = this.getFirstAvailableAnswer(message, chatVo.points);
+        if (!answer) { // answer not found for that points count
+            chatVo.status = ChatStatuses.ChatFinished;
+            await updateInCollection(ChatCollectonName, {
+                messages: chatVo.messages,
+                status: chatVo.status
+            }, {_id: new ObjectID(chatVo.id)});
+            return chatVo;
         }
-        let next = null;
-        let maxPoints = 0;
-        for (let i in botMessage.next) {
-            if (botMessage.next[i].points >= maxPoints && botMessage.next[i].points <= chatVo.points) {
-                next = botMessage.next[i];
-                maxPoints = botMessage.next[i].points;
-            }
+        if (answer.goto === ':finish:') {
+            chatVo.status = ChatStatuses.ChatFinished;
+            await updateInCollection(ChatCollectonName, {
+                status: chatVo.status,
+                messages: chatVo.messages
+            }, {_id: new ObjectID(chatVo.id)});
+            return chatVo;
         }
-        console.debug('next', chatVo.points, next);
+    
+        const {message: nextMessage} = this.getBotMessageById(parseInt(answer.goto));
+        if (!nextMessage) {
+            console.error('nextMessage is empty', answer.goto);
+            throw Error('Unable to find next message');
+        }
+
+        chatVo.messages.push(
+            new ChatItemVo(
+                {
+                    text: nextMessage.text,
+                    showAt: new Date()
+                }, 
+                nextMessage.id,
+                chatVo.points
+            )
+        );
+        
+        await updateInCollection(ChatCollectonName, {
+            messages: chatVo.messages,
+            status: ChatStatuses.Online
+        }, {_id: new ObjectID(chatVo.id)});
+
+        chatVo.status = ChatStatuses.WaitUserReply; // @todo waitBotReply
+        await updateInCollection(ChatCollectonName, {
+            status: chatVo.status,
+            messages: chatVo.messages
+        }, {_id: new ObjectID(chatVo.id)});
+        return chatVo;
 
         //@todo
         //1. найти последнее сообщение
@@ -150,6 +224,7 @@ class ChatService {
 
         
     }
+
 }
 
-module.exports = {ChatService, ChatCollectonName};
+module.exports = {ChatService, ChatCollectonName, ChatStatuses};

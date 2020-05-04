@@ -227,8 +227,10 @@ class Api100 {
      */
     getBotStatus(req, res) {
         new UserService().getUserVoByRequest(req)
-            .then((userVo) => (new BotService(userVo)).getMyBotStatus(req.params.botId))
-            .then((bot) => {
+            .then((userVo) => {
+                const botVo = await (new BotService(userVo)).getMyBot(req.params.botId);
+                const chatVo = await (new ChatService(botVo, userVo)).getChat();
+                botVo.setStatus(chatVo.status);
                 res.send({result: true, bot: bot});
             })
             .catch((e) => {
@@ -244,10 +246,10 @@ class Api100 {
     getBotChat(req, res) {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => {
-                new BotService(userVo).getMyBotStatus(req.params.botId)
+                new BotService(userVo).getMyBot(req.params.botId)
                     .then( (botVo) => new ChatService(botVo, userVo).getChat() )
-                    .then((chat) => {
-                        res.send({result: true, chat: chat});
+                    .then((chatVo) => {
+                        res.send({result: true, chat: chatVo});
                     })
             })
             .catch((e) => {
@@ -256,6 +258,10 @@ class Api100 {
             });
     }
 
+    /**
+     * @param {*} req 
+     * @param {*} res 
+     */
     setUserChatAnswer(req, res) {
         const body = req.body;
         if (!body) {
@@ -266,7 +272,11 @@ class Api100 {
                 new BotService(userVo).getMyBotMessages(req.params.botId)
                     .then( (botVo) => new ChatService(botVo, userVo).setAnswer(body.caseId) )
                     .then((chat) => {
-                        res.send({result: true, chat: chat});
+                        res.send({result: true, chat, currentCases: []});
+                    })
+                    .catch((e) => {
+                        console.error('set chat answer fail', e);
+                        sendError(res, e)
                     })
             })
             .catch((e) => {
@@ -339,17 +349,25 @@ class Api100 {
             });
     }
 
+    /**
+     * специальные экшены для тестов
+     * @param {*} req 
+     * @param {*} res 
+     */
     secureActions(req, res) {
         const service = new SecureService();
         const action = req.params.action;
         let token = null;
         if (req.headers.authorization) {
+            console.debug('auth', req.headers.authorization);
             token = req.headers.authorization.replace(/token/g, '').trim();
         }
-        const allowdeMethods = ['resetDb'];
+        const allowdeMethods = ['resetDb', 'resetChats', 'resetDialogs', 'resetBots'];
         if (!allowdeMethods.includes(action)) {
             return res.send({result: false, message: 'action not allowed'});
         }
+
+        console.debug('secureActions call', action, token);
 
         service[action](token)
             .then((result) => {

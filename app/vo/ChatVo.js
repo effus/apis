@@ -11,22 +11,9 @@ class ChatVo {
         this.botId = document.bot_id;
         this.messages = document.messages;
         this.points = document.points;
-        this.botStatus = document.botStatus;
+        this.status = document.status;
     }
 
-    /**
-     * @param {*} points 
-     */
-    setPoints(points) {
-        this.points = points;
-    }
-
-    /**
-     * @param {*} status 
-     */
-    setBotStatus(status) {
-        this.botStatus = status;
-    }
 }
 
 module.exports = {ChatVo};

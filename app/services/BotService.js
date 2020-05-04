@@ -3,16 +3,6 @@ const {getCollection, insertIntoCollection, updateInCollection} = require('../mo
 const ObjectID = require('mongodb').ObjectID;
 const {BotVo} = require('../vo/BotVo.js');
 
-/**
- * Статусы бота
- */
-const BotStatuses = {
-    Unavailable: 0,
-    Online: 1,
-    Offline: 2,
-    Type: 3
-};
-
 const ReservedTargetWords = {
     FINISH: ':finish:'
 };
@@ -38,9 +28,9 @@ class BotService {
     }
 
     /**
-     * @param {string} botId 
+     * @param {*} botId 
      */
-    async getMyBot(botId) {
+    async getMyOwnBotDocument(botId) {
         const result = await this.findMany({
             author: new ObjectID(this.userVo.id),
             _id: new ObjectID(botId)
@@ -80,7 +70,7 @@ class BotService {
      * @param {*} photoUrl 
      */
     async updateBot(botId, name, gender, photoUrl) {
-        let bot = await this.getMyBot(botId);
+        let bot = await this.getMyOwnBotDocument(botId);
         bot.name = name;
         bot.gender = gender;
         bot.photo_url = photoUrl;
@@ -102,7 +92,7 @@ class BotService {
      * @param {*} flag 
      */
     async setPublishFlag(botId, flag) {
-        let bot = await this.getMyBot(botId);
+        let bot = await this.getMyOwnBotDocument(botId);
         console.debug('setPublishFlag', bot);
         let updated = null;
         if (flag === false) {
@@ -143,7 +133,7 @@ class BotService {
      * @param {*} botId 
      */
     async deleteOwnBot(botId) {
-        let bot = await this.getMyBot(botId);
+        let bot = await this.getMyOwnBotDocument(botId);
         bot.author = null;
         bot.flag_publish = false;
         await updateInCollection(
@@ -186,7 +176,7 @@ class BotService {
         for (let i in result) {
             let botVo = new BotVo(result[i]);
             //@todo check status
-            botVo.setStatus(BotStatuses.Online);
+            //botVo.setStatus(BotStatuses.Online);
             bots.push(botVo);
         }
         return bots;
@@ -196,12 +186,15 @@ class BotService {
      * Получение бота
      */
     async getMyOwnBot(botId) {
-        const result = await this.getMyBot(botId);
+        const result = await this.getMyOwnBotDocument(botId);
         let bot = new BotVo(result);
         bot.setMessages(result.messages);
         return bot;
     }
 
+    /**
+     * @param {*} botId 
+     */
     async getMyBotDocument(botId) {
         const botIds = Object.keys(this.userVo.bots);
         if (!botIds.includes(botId)) {
@@ -214,16 +207,6 @@ class BotService {
             throw Error('Bot not found');
         }
         return documents[0];
-    }
-
-    /**
-     * @param {*} botId 
-     */
-    async getMyBotStatus(botId) {
-        const document = await this.getMyBotDocument(botId);
-        let botVo = new BotVo(document);
-        botVo.setStatus(BotStatuses.Online); // @todo from chat
-        return botVo;
     }
 
     /**
@@ -344,7 +327,7 @@ class BotService {
      * @param {Array} messages 
      */
     async setMyOwnBotMessages(botId, messages) {
-        const bot = new BotVo(await this.getMyBot(botId));
+        const bot = await this.getMyOwnBot(botId);
         if (messages.length === 0) {
             return {
                 updatedCount: 0,
