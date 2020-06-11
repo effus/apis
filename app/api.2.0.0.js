@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const {UserService} = require('./services/UserService.js');
 const {VirtualBillsService} = require('./services/VirtualBillsService.js');
+const {BillRevisionService} = require('./services/BillRevisionService.js');
 
 const sendError = (res, e) => {
     res.send({result: false, message: e.message});
@@ -91,6 +92,7 @@ class Api200 {
     }
 
     /**
+     * создание счета
      * @param {*} req 
      * @param {*} res 
      */
@@ -111,6 +113,7 @@ class Api200 {
     }
 
     /**
+     * удаление счета
      * @param {*} req 
      * @param {*} res 
      */
@@ -127,6 +130,7 @@ class Api200 {
     }
 
     /**
+     * обновление счета
      * @param {*} req 
      * @param {*} res 
      */
@@ -150,6 +154,92 @@ class Api200 {
             });
     }
 
+    /**
+     * получение ревизий
+     * @param {*} req 
+     * @param {*} res 
+     */
+    getBillRevisions(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new VirtualBillsService(userVo)).getBill(req.params.id))
+            .then((billVo) => (new BillRevisionService(billVo)).getRevisions(req.params.from))
+            .then((revisions) => {
+                res.send({result: true, revisions});
+            })
+            .catch((e) => {
+                console.error('getBills fail', e);
+                sendError(res, e)
+            });
+    }
+
+    /**
+     * создание ревизии
+     * @param {*} req 
+     * @param {*} res 
+     */
+    createBillRevision(req, res) {
+        const request = req.body;
+        if (!request || !request.charge_amount) {
+            console.debug('createBillRevision requwest', request);
+            throw Error('Some request parameters is empty');
+        }
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new VirtualBillsService(userVo)).getBill(req.params.id))
+            .then((billVo) => (new BillRevisionService(billVo)).createRevision(
+                request.charge_amount
+            ))
+            .then(() => {
+                res.send({result: true});
+            })
+            .catch((e) => {
+                console.error('createBill fail', e);
+                sendError(res, e)
+            });
+    }
+
+    /**
+     * удаление последней ревизии
+     * @param {*} req 
+     * @param {*} res 
+     */
+    deleteLastRevision(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new VirtualBillsService(userVo)).getBill(req.params.id))
+            .then(async (billVo) =>  {
+                const service = new BillRevisionService(billVo);
+                const lastRevisionVo = await service.getLastRevision();
+                await service.deleteRevision(lastRevisionVo.id);
+                res.send({result: true});
+            })
+            .catch((e) => {
+                console.error('createBill fail', e);
+                sendError(res, e)
+            });
+    }
+
+    /**
+     * перевод средств между счетами
+     * @param {*} req 
+     * @param {*} res 
+     */
+    setBillTransfer(req, res) {
+        const request = req.body;
+        if (!request || !request.amount) {
+            throw Error('Some request parameters is empty');
+        }
+        new UserService().getUserVoByRequest(req)
+            .then(async (userVo) =>  {
+                const billService = new VirtualBillsService(userVo);
+                const billVoFrom = await billService.getBill(req.params.from);
+                const billVoTo = await billService.getBill(req.params.to);
+                const transfer = await new BillRevisionService(billVoFrom).transfer(billVoTo, request.amount);
+                res.send({result: true, transfer});
+            })
+            .catch((e) => {
+                console.error('createBill fail', e);
+                sendError(res, e)
+            });
+    }
 }
 
 const Api = new Api200();
@@ -161,5 +251,8 @@ router.get('/bills', Api.getBills);
 router.put('/bill', Api.createBill);
 router.delete('/bill/:id', Api.deleteBill);
 router.post('/bill/:id', Api.updateBill);
-
+router.get('/bill/:id/revisions/:from', Api.getBillRevisions);
+router.put('/bill/:id/revisions', Api.createBillRevision);
+router.delete('/bill/:id/revision', Api.deleteLastRevision);
+router.post('/bill/transfer/:from/:to', Api.setBillTransfer);
 module.exports = router;

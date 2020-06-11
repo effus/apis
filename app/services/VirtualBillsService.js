@@ -40,7 +40,6 @@ class VirtualBillsService {
             _id: new ObjectID(id),
             owner: new ObjectID(this.userVo.id)
         });
-        console.debug('getDocument', id, this.userVo.id, documents);
         if (documents.length === 0) {
             throw Error('Document not found');
         }

@@ -9,10 +9,21 @@ Content-Type: application/json
 }
 
 ### Авторизация по токену
+### 
 
 GET http://localhost:5000/2.0.0/user/me
 Content-Type: application/json
 Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+
+
+### Авторизация по паролю
+POST http://localhost:5000/2.0.0/user/login
+Content-Type: application/json
+
+{
+    "email": "test2@test.ee",
+    "password": "123123123"
+}
 
 
 ### Создание счета
@@ -40,3 +51,32 @@ Content-Type: application/json
 Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
 
 {"name": "Test bill 2", "group_id": 1}
+
+### Получение ревизий
+GET http://localhost:5000/2.0.0/bill/5ee27515ddf8e51733c42700/revisions/2020-06-11
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591902544718:aab458469df68b985560362b54d0ce411b31c32383468c83f3727c3a5336a24f
+
+### Добавление ревизии
+PUT http://localhost:5000/2.0.0/bill/5ee27515ddf8e51733c42700/revisions
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591902544718:aab458469df68b985560362b54d0ce411b31c32383468c83f3727c3a5336a24f
+
+{
+    "charge_amount": "1000.00"
+}
+
+### Удаление последней ревизии
+DELETE http://localhost:5000/2.0.0/bill/5ee27515ddf8e51733c42700/revision
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591902544718:aab458469df68b985560362b54d0ce411b31c32383468c83f3727c3a5336a24f
+
+
+### Перевод средств между счетами
+POST http://localhost:5000/2.0.0/bill/transfer/5ee27515ddf8e51733c42700/5ee274ccdcc04216bb147898/
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591906634871:0744a4612d8fe6e0fc873dc9b609910ed6604f5d500bb75a34b30255eefcd4d6
+
+{
+    "amount": "500.00"
+}
