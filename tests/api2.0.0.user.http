@@ -11,4 +11,32 @@ Content-Type: application/json
 ### Авторизация по токену
 
 GET http://localhost:5000/2.0.0/user/me
+Content-Type: application/json
 Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+
+
+### Создание счета
+
+PUT http://localhost:5000/2.0.0/bill
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+
+{"name": "Test bill"}
+
+
+### Список счетов
+GET http://localhost:5000/2.0.0/bills
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+
+### Удаление счета
+DELETE http://localhost:5000/2.0.0/bill/5ee275cea83ef917ab68a116
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+
+### Обновление счета
+POST http://localhost:5000/2.0.0/bill/5ee27515ddf8e51733c42700
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+
+{"name": "Test bill 2", "group_id": 1}
