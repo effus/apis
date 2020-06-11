@@ -30,15 +30,15 @@ Content-Type: application/json
 
 PUT http://localhost:5000/2.0.0/bill
 Content-Type: application/json
-Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591906634871:0744a4612d8fe6e0fc873dc9b609910ed6604f5d500bb75a34b30255eefcd4d6
 
-{"name": "Test bill"}
+{"name": "Test bill 3"}
 
 
 ### Список счетов
 GET http://localhost:5000/2.0.0/bills
 Content-Type: application/json
-Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591906634871:0744a4612d8fe6e0fc873dc9b609910ed6604f5d500bb75a34b30255eefcd4d6
 
 ### Удаление счета
 DELETE http://localhost:5000/2.0.0/bill/5ee275cea83ef917ab68a116
@@ -60,7 +60,7 @@ Authorization: token 5ee26bdcec73790bb6e41eaa:1591902544718:aab458469df68b985560
 ### Добавление ревизии
 PUT http://localhost:5000/2.0.0/bill/5ee27515ddf8e51733c42700/revisions
 Content-Type: application/json
-Authorization: token 5ee26bdcec73790bb6e41eaa:1591902544718:aab458469df68b985560362b54d0ce411b31c32383468c83f3727c3a5336a24f
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591906634871:0744a4612d8fe6e0fc873dc9b609910ed6604f5d500bb75a34b30255eefcd4d6
 
 {
     "charge_amount": "1000.00"
@@ -70,6 +70,12 @@ Authorization: token 5ee26bdcec73790bb6e41eaa:1591902544718:aab458469df68b985560
 DELETE http://localhost:5000/2.0.0/bill/5ee27515ddf8e51733c42700/revision
 Content-Type: application/json
 Authorization: token 5ee26bdcec73790bb6e41eaa:1591902544718:aab458469df68b985560362b54d0ce411b31c32383468c83f3727c3a5336a24f
+
+
+### Получение последней ревизии
+GET http://localhost:5000/2.0.0/bill/5ee27515ddf8e51733c42700/revision/last
+Content-Type: application/json
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591906634871:0744a4612d8fe6e0fc873dc9b609910ed6604f5d500bb75a34b30255eefcd4d6
 
 
 ### Перевод средств между счетами

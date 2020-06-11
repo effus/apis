@@ -103,8 +103,9 @@ class Api200 {
         }
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new VirtualBillsService(userVo)).createBill(request.name))
-            .then((bill) => {
-                res.send({result: true, bill: bill});
+            .then(async (billVo) => {
+                const revision = await new BillRevisionService(billVo).createRevision("0.00");
+                res.send({result: true, bill: billVo, revision});
             })
             .catch((e) => {
                 console.error('createBill fail', e);
@@ -198,6 +199,27 @@ class Api200 {
     }
 
     /**
+     * получение последней ревизии по счету
+     * @param {*} req 
+     * @param {*} res 
+     */
+    getLastBillRevision(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new VirtualBillsService(userVo)).getBill(req.params.id))
+            .then(async (billVo) =>  {
+                const service = new BillRevisionService(billVo);
+                const lastRevisionVo = await service.getLastRevision();
+                console.debug('lastRevisionVo', lastRevisionVo);
+                res.send({result: true, revision: lastRevisionVo});
+            })
+            .catch((e) => {
+                console.error('createBill fail', e);
+                sendError(res, e)
+            });
+    }
+
+
+    /**
      * удаление последней ревизии
      * @param {*} req 
      * @param {*} res 
@@ -252,6 +274,7 @@ router.put('/bill', Api.createBill);
 router.delete('/bill/:id', Api.deleteBill);
 router.post('/bill/:id', Api.updateBill);
 router.get('/bill/:id/revisions/:from', Api.getBillRevisions);
+router.get('/bill/:id/revision/last', Api.getLastBillRevision);
 router.put('/bill/:id/revisions', Api.createBillRevision);
 router.delete('/bill/:id/revision', Api.deleteLastRevision);
 router.post('/bill/transfer/:from/:to', Api.setBillTransfer);
