@@ -1,0 +1,14 @@
+### Регистрация 
+PUT http://localhost:5000/2.0.0/user/register
+Content-Type: application/json
+
+{
+    "email": "test2@test.ee",
+    "name": "test2",
+    "password": "123123123"
+}
+
+### Авторизация по токену
+
+GET http://localhost:5000/2.0.0/user/me
+Authorization: token 5ee26bdcec73790bb6e41eaa:1591897284050:1faed607b8003baeda6859e43edfe784fc48738f8d6fa143a9465d5d7ba92f80

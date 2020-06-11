@@ -4,6 +4,7 @@ const path = require('path');
 const cors = require('cors');
 
 const Api100 = require('./app/api.1.0.0');
+const Api200 = require('./app/api.2.0.0');
 let app = express();
 app.use(cors());
 app.use(express.json());
@@ -13,8 +14,9 @@ app.get('/', (req, res) => {
 });
 app.get('/apiinfo', (req, res) => {
   Db.connect().then(() => {
-    res.send({ apis: ['1.0.0'], db: {connected: true}});
+    res.send({ apis: ['1.0.0', '2.0.0'], db: {connected: true}});
   });
 })
 app.use('/datesimapi/1.0.0', Api100);
+app.use('/2.0.0', Api200);
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

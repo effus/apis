@@ -124,6 +124,8 @@ class UserService {
     async registerBaseUser(email, name, password) {
         const hashedPassword = this.authService.securePassword(password);
         const token = this.authService.getToken();
+        let expires = new Date();
+        expires.setTime(new Date().getTime() + 60*60*1000);
         let object = {
             hashed_password: hashedPassword,
             email: email,
@@ -131,7 +133,8 @@ class UserService {
             bots: {},
             permissions: this.authService.getBaseUserPermissions(),
             flags: [],
-            token: token
+            token: token,
+            token_expires: expires
         };
         await this.checkUserExists(email, token);
         const insertResult = await insertIntoCollection(UserCollectonName, object);
