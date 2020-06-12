@@ -3,6 +3,8 @@
 const {getCollection, insertIntoCollection, updateInCollection} = require('../mongo');
 const {VirtualBillVo} = require("../vo/VirtualBillVo");
 const ObjectID = require('mongodb').ObjectID;
+const {BillRevisionService} = require('./BillRevisionService.js');
+const {BillRevisionVo} = require('../vo/BillRevisionVo');
 
 const BillsCollectonName = 'api_bills';
 
@@ -60,8 +62,20 @@ class VirtualBillsService {
     async getBills() {
         const documents = await this.getDocuments();
         let result = [];
+        const billsIds = documents.map(item => item._id);
+        const revisionService = new BillRevisionService();
+        let lastRevisions = await revisionService.getLastRevisionsOfBills(billsIds); 
+
         for (let i in documents) {
-            result.push(new VirtualBillVo(documents[i]));
+            let vo = new VirtualBillVo(documents[i]);
+            if (typeof lastRevisions[vo.id] !== 'undefined') {
+                vo.setLastRevision(new BillRevisionVo({
+                    inserted_at: lastRevisions[vo.id].dt,
+                    charge_amount: lastRevisions[vo.id].charge,
+                    balance_amount: lastRevisions[vo.id].balance
+                }));
+            }
+            result.push(vo);
         }
         return result;
     }

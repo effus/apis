@@ -9,6 +9,13 @@ class VirtualBillVo {
         this.last_update = object.last_update;
         this.group_id = object.group_id;
     }
+
+    /**
+     * @param {BillRevisionVo} lastRevision 
+     */
+    setLastRevision(lastRevision) {
+        this.lastRevision = lastRevision;
+    }
 }
 
 module.exports = {VirtualBillVo};

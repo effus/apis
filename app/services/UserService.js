@@ -125,7 +125,7 @@ class UserService {
         const hashedPassword = this.authService.securePassword(password);
         const token = this.authService.getToken();
         let expires = new Date();
-        expires.setTime(new Date().getTime() + 60*60*1000);
+        expires.setTime(new Date().getTime() + 60*60*24*7*1000);
         let object = {
             hashed_password: hashedPassword,
             email: email,
@@ -164,7 +164,7 @@ class UserService {
         const userId = result._id;
         result.token = this.authService.getToken();
         let expires = new Date();
-        expires.setTime(new Date().getTime() + 60*60*1000);
+        expires.setTime(new Date().getTime() + 60*60*24*7*1000);
         result.token_expires = expires;
         await updateInCollection(UserCollectonName, result, {
             _id: new ObjectID(userId)

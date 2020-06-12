@@ -83,6 +83,7 @@ class Api200 {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new VirtualBillsService(userVo)).getBills())
             .then((bills) => {
+                
                 res.send({result: true, bills: bills});
             })
             .catch((e) => {
@@ -189,8 +190,8 @@ class Api200 {
             .then((billVo) => (new BillRevisionService(billVo)).createRevision(
                 request.charge_amount
             ))
-            .then(() => {
-                res.send({result: true});
+            .then((revision) => {
+                res.send({result: true, revision});
             })
             .catch((e) => {
                 console.error('createBill fail', e);

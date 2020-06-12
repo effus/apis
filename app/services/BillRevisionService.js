@@ -25,6 +25,15 @@ class BillRevisionService {
     }
 
     /**
+     * @param {*} sort 
+     * @param {*} group 
+     */
+    async aggregate(sort, group) {
+        const collection = await getCollection(BillRevisionCollectonName);
+        return collection.aggregate(sort, group);
+    }
+
+    /**
      * @param {*} params 
      */
     async getDocuments(params) {
@@ -79,6 +88,30 @@ class BillRevisionService {
         let result = [];
         for (let i in documents) {
             result.push(new BillRevisionVo(documents[i]));
+        }
+        return result;
+    }
+
+    /**
+     * @param {*} bills 
+     */
+    async getLastRevisionsOfBills(bills) {
+        let cursor = await this.aggregate([
+            {$match: {  "bill_id": {$in: bills.map(bill => new ObjectID(bill)) }}},
+            {$sort: { "inserted_at": -1 }},
+            {
+                $group: {
+                    _id: "$bill_id",
+                    dt: { $first : "$inserted_at" },
+                    balance: { $first : "$balance_amount" },
+                    charge: { $first : "$charge_amount" },
+                }
+            }
+        ]);
+        const aggregated = await cursor.toArray();
+        let result = {};
+        for (let i in aggregated) {
+            result[aggregated[i]._id] = aggregated[i];
         }
         return result;
     }
