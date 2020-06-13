@@ -1,6 +1,6 @@
 'use strict';
 
-const {getCollection, insertIntoCollection, updateInCollection} = require('../mongo');
+const {getCollection, insertIntoCollection, updateInCollection, getDocument, findMany} = require('../mongo');
 const {VirtualBillVo} = require("../vo/VirtualBillVo");
 const ObjectID = require('mongodb').ObjectID;
 const {BillRevisionService} = require('./BillRevisionService.js');
@@ -18,41 +18,21 @@ class VirtualBillsService {
     }
 
     /**
-     * @param {*} params 
-     */
-    async findMany(params) {
-        const collection = await getCollection(BillsCollectonName);
-        return collection.find(params).toArray();
-    }
-
-    /**
      * 
      */
     async getDocuments() {
-        return await this.findMany({
-            owner: new ObjectID(this.userVo.id)
-        });
+        return await findMany(BillsCollectonName, {owner: new ObjectID(this.userVo.id)});
     }
 
-    /**
-     * @param {*} id 
-     */
-    async getDocument(id) {
-        const documents = await this.findMany({
-            _id: new ObjectID(id),
-            owner: new ObjectID(this.userVo.id)
-        });
-        if (documents.length === 0) {
-            throw Error('Document not found');
-        }
-        return documents[0];
-    }
 
     /**
      * @param {*} id 
      */
     async getBill(id) {
-        const document = await this.getDocument(id);
+        const document = await getDocument(
+            BillsCollectonName,
+            {_id: new ObjectID(id), owner: new ObjectID(this.userVo.id)}
+        );
         return new VirtualBillVo(document);
     }
 
@@ -122,8 +102,10 @@ class VirtualBillsService {
      * @param {*} id 
      */
     async deleteBill(id) {
-        let document = await this.getDocument(id);
-        console.debug('deleteBill', document);
+        let document = await getDocument(
+            BillsCollectonName,
+            {_id: new ObjectID(id), owner: new ObjectID(this.userVo.id)}
+        );
         document.last_update_user = this.userVo.id;
         document.last_update = new Date();
         document.version++;

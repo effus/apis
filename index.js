@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const Api100 = require('./app/api.1.0.0');
 const Api200 = require('./app/api.2.0.0');
+const Api210 = require('./app/api.2.1.0');
 let app = express();
 app.use(cors());
 app.use(express.json());
@@ -19,4 +20,5 @@ app.get('/apiinfo', (req, res) => {
 })
 app.use('/datesimapi/1.0.0', Api100);
 app.use('/2.0.0', Api200);
+app.use('/2.1.0', Api210);
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

@@ -7,6 +7,7 @@ class UserVo {
         this.name = '';
         this.bots = {};
         this.permissions = [];
+        this.bill_group_proportions = {};
     }
 
     setPersonalData(email, name) {
@@ -24,6 +25,10 @@ class UserVo {
 
     setToken(token) {
         this.token = token;
+    }
+
+    setBillGroupProportions(proportions) {
+        this.bill_group_proportions = proportions;
     }
 }
 

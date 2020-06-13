@@ -97,6 +97,27 @@ const deleteInCollection = async (collection, searchParams) => {
     return await db.collection(collection).deleteMany(searchParams);
 };
 
+/**
+ * @param {*} collectionName 
+ * @param {*} params 
+ */
+const findMany = async (collectionName, params) => {
+    const collection = await getCollection(collectionName);
+    return collection.find(params).toArray();
+}
+
+/**
+ * @param {*} collectionName 
+ * @param {*} params 
+ */
+const getDocument = async (collectionName, params) => {
+    const documents = await findMany(collectionName, params);
+    if (documents.length === 0) {
+        throw Error('Document not found');
+    }
+    return documents[0];
+}
+
 module.exports = {
     Mongo, 
     getCollection, 
@@ -104,5 +125,7 @@ module.exports = {
     updateInCollection, 
     deleteInCollection,
     saveDocumentInCollection,
-    truncateCollection
+    truncateCollection,
+    findMany,
+    getDocument
 };

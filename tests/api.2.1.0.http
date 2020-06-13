@@ -1,0 +1,38 @@
+
+### Список счетов
+GET http://localhost:5000/2.1.0/bills
+Content-Type: application/json
+Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+
+
+### Группы счетов
+GET http://localhost:5000/2.1.0/bill/groups/
+Content-Type: application/json
+Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+
+### Создать группу
+PUT http://localhost:5000/2.1.0/bill/groups/
+Content-Type: application/json
+Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+
+{
+    "name": "group 100",
+    "color": "#fffccc",
+    "proportion": 0
+}
+
+### Удаление группы
+DELETE http://localhost:5000/2.1.0/bill/group/5ee4fd15355fc9230cdfbeb2
+Content-Type: application/json
+Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+
+### Обновить группу
+POST http://localhost:5000/2.1.0/bill/group/5ee5083165a802263f3970ab
+Content-Type: application/json
+Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+
+{
+    "name": "group 101",
+    "included_bills": ["5ee3cac89efa341da816d741"],
+    "main_bill_id": "5ee3cac89efa341da816d741"
+}
