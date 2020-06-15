@@ -8,17 +8,18 @@ Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3
 ### Группы счетов
 GET http://localhost:5000/2.1.0/bill/groups/
 Content-Type: application/json
-Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+Authorization: token 5ee267cb49957109f56c4448:1592248265558:ab6ca40e1fbafae7b818d5c1cc68912cfb4fb5889e3a98c97cb7c33b175cce70
 
 ### Создать группу
 PUT http://localhost:5000/2.1.0/bill/groups/
 Content-Type: application/json
-Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+Authorization: token 5ee267cb49957109f56c4448:1592248265558:ab6ca40e1fbafae7b818d5c1cc68912cfb4fb5889e3a98c97cb7c33b175cce70
 
 {
-    "name": "group 100",
-    "color": "#fffccc",
-    "proportion": 0
+    "name":"www",
+    "color":"#7E0000",
+    "included_bills":["5ee3cac89efa341da816d741"],
+    "main_bill_id":"5ee3cac89efa341da816d741"
 }
 
 ### Удаление группы
@@ -36,3 +37,4 @@ Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3
     "included_bills": ["5ee3cac89efa341da816d741"],
     "main_bill_id": "5ee3cac89efa341da816d741"
 }
+
