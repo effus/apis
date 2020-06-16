@@ -162,7 +162,7 @@ class UserService {
             //@todo ban if too much tries
             throw Error('Incorrect password');
         }
-        const userId = result._id;
+        const userId = document._id;
         document.token = this.authService.getToken();
         let expires = new Date();
         expires.setTime(new Date().getTime() + 60*60*24*7*1000);

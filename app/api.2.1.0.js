@@ -7,6 +7,7 @@ const {BillRevisionService} = require('./services/BillRevisionService.js');
 const {BillGroupService} = require('./services/BillGroupService.js');
 
 const sendError = (res, e) => {
+    console.debug('error response', e);
     res.send({result: false, message: e.message});
 }
 
