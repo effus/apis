@@ -288,8 +288,9 @@ class Api201 {
                     );
                     if (request.proportion) {
                         await userService.setBillGroupProportion(userVo.id, groupVo.id, request.proportion);
+                        userVo = userService.getUserVoByRequest(req);
                     }
-                    res.send({result: true, group: groupVo});
+                    res.send({result: true, group: groupVo, bill_group_proportions: userVo.bill_group_proportions});
                 } catch (e) {
                     console.error('createBillGroup fail', e);
                     sendError(res, e)
@@ -310,7 +311,8 @@ class Api201 {
                 const groups = await (new BillGroupService(userVo)).getList();
                 res.send({
                     result: true, 
-                    groups: groups
+                    groups: groups,
+                    bill_group_proportions: userVo.bill_group_proportions
                 });
             })
             .catch((e) => {
@@ -327,8 +329,10 @@ class Api201 {
         new UserService().getUserVoByRequest(req)
             .then(async (userVo) => {
                 await (new BillGroupService(userVo)).deleteGroup(req.params.id);
+                userVo = await new UserService().deleteBillGroupProportion(userVo.id, req.params.id);
                 res.send({
-                    result: true
+                    result: true,
+                    bill_group_proportions: userVo.bill_group_proportions
                 });
             })
             .catch((e) => {
@@ -357,8 +361,9 @@ class Api201 {
                     );
                     if (request.proportion) {
                         await userService.setBillGroupProportion(userVo.id, groupVo.id, request.proportion);
+                        userVo = userService.getUserVoByRequest(req);
                     }
-                    res.send({result: true, group: groupVo});
+                    res.send({result: true, group: groupVo, bill_group_proportions: userVo.bill_group_proportions});
                 } catch (e) {
                     console.error('updateBillGroup fail', e);
                     sendError(res, e)

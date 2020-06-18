@@ -1,36 +1,39 @@
 
+### User
+GET http://localhost:5000/2.1.0/user/me
+Content-Type: application/json
+Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334b62ed1eed972699cee03ce3767451bdc12572c66ba0b
+
 ### Список счетов
 GET http://localhost:5000/2.1.0/bills
 Content-Type: application/json
-Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
-
+Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334b62ed1eed972699cee03ce3767451bdc12572c66ba0b
 
 ### Группы счетов
 GET http://localhost:5000/2.1.0/bill/groups/
 Content-Type: application/json
-Authorization: token 5ee267cb49957109f56c4448:1592248265558:ab6ca40e1fbafae7b818d5c1cc68912cfb4fb5889e3a98c97cb7c33b175cce70
+Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334b62ed1eed972699cee03ce3767451bdc12572c66ba0b
 
 ### Создать группу
 PUT http://localhost:5000/2.1.0/bill/groups/
 Content-Type: application/json
-Authorization: token 5ee267cb49957109f56c4448:1592248265558:ab6ca40e1fbafae7b818d5c1cc68912cfb4fb5889e3a98c97cb7c33b175cce70
+Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334b62ed1eed972699cee03ce3767451bdc12572c66ba0b
 
-{
-    "name":"www",
-    "color":"#7E0000",
-    "included_bills":["5ee3cac89efa341da816d741"],
-    "main_bill_id":"5ee3cac89efa341da816d741"
-}
+{"name":"C",
+"color":"#005500",
+"included_bills":["5eeb68db5665cd0f1e4811b5"],
+"main_bill_id":"5eeb68db5665cd0f1e4811b5",
+"proportion":"50"}
 
 ### Удаление группы
 DELETE http://localhost:5000/2.1.0/bill/group/5ee4fd15355fc9230cdfbeb2
 Content-Type: application/json
-Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334b62ed1eed972699cee03ce3767451bdc12572c66ba0b
 
 ### Обновить группу
 POST http://localhost:5000/2.1.0/bill/group/5ee5083165a802263f3970ab
 Content-Type: application/json
-Authorization: token 5ee267cb49957109f56c4448:1592063758545:91fbc2f8cf239fe0d6d3e22d2b17c4d0e1c5d1144eafc81e02a69df753da62b9
+Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334b62ed1eed972699cee03ce3767451bdc12572c66ba0b
 
 {
     "name": "group 101",

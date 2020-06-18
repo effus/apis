@@ -225,13 +225,29 @@ class UserService {
         }
         let userVo = await this.getUser(userId);
         let proportions = userVo.bill_group_proportions;
-        proportions[groupId] = proportionValue;
+        proportions[groupId] = parseFloat(proportionValue);
+        console.debug('setBillGroupProportion', proportions);
         let totalProportions = 0;
         for (let i in proportions) {
-            totalProportions += proportions[i];
+            totalProportions += parseFloat(proportions[i]);
         }
-        if (totalProportions + proportionValue > 100) {
+        if (totalProportions > 100) {
             throw new Error('total proportions sum greater than 100');
+        }
+        userVo.setBillGroupProportions(proportions);
+        await this.updateBillGroupProportions(userVo);
+        return userVo;
+    }
+
+    /**
+     * @param {*} userId 
+     * @param {*} groupId 
+     */
+    async deleteBillGroupProportion(userId, groupId) {
+        let userVo = await this.getUser(userId);
+        let proportions = userVo.bill_group_proportions;
+        if (proportions[groupId]) {
+            delete proportions[groupId];
         }
         userVo.setBillGroupProportions(proportions);
         await this.updateBillGroupProportions(userVo);
