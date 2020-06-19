@@ -7,7 +7,7 @@ const Api100 = require('./app/api.1.0.0');
 const Api200 = require('./app/api.2.0.0');
 const Api210 = require('./app/api.2.1.0');
 let app = express();
-app.use(cors());
+app.use(cors({origin: '*'}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')))
 app.get('/', (req, res) => {
