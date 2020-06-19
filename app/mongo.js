@@ -113,7 +113,7 @@ const findMany = async (collectionName, params) => {
 const getDocument = async (collectionName, params) => {
     const documents = await findMany(collectionName, params);
     if (documents.length === 0) {
-        throw Error('Document not found');
+        throw Error('Not found');
     }
     return documents[0];
 }

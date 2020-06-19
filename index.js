@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 });
 app.get('/apiinfo', (req, res) => {
   Db.connect().then(() => {
-    res.send({ apis: ['1.0.0', '2.0.0'], db: {connected: true}});
+    res.send({ apis: ['1.0.0', '2.1.0'], db: {connected: true}});
   });
 })
 app.use('/datesimapi/1.0.0', Api100);

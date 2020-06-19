@@ -41,3 +41,14 @@ Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334
     "main_bill_id": "5ee3cac89efa341da816d741"
 }
 
+###
+POST http://effus-apis.herokuapp.com/2.1.0/user/login
+
+{"email":"ffff@ddd.rr","password":"4343"}
+
+
+###
+POST http://localhost:5000/2.1.0/user/login
+Content-Type: application/json
+
+{"email":"ffff@ddd.rr","password":"4343"}
