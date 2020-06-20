@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const Api100 = require('./app/api.1.0.0');
 const Api210 = require('./app/api.2.1.0');
+const Api30 = require('./app/api.3.0');
 let app = express();
 app.use(cors({origin: '*'}));
 app.use(express.json());
@@ -14,9 +15,10 @@ app.get('/', (req, res) => {
 });
 app.get('/apiinfo', (req, res) => {
   Db.connect().then(() => {
-    res.send({ apis: ['1.0.0', '2.1.0'], db: {connected: true}});
+    res.send({ apis: ['1.0.0', '2.1.0', '3.0'], db: {connected: true}});
   });
 })
 app.use('/datesimapi/1.0.0', Api100);
 app.use('/2.1.0', Api210);
+app.use('/3.0', Api30);
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

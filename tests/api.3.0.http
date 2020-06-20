@@ -1,0 +1,24 @@
+### Ping
+GET http://localhost:5000/3.0/
+Content-Type: application/json
+
+
+### New bot
+PUT http://localhost:5000/3.0/bots
+Content-Type: application/json
+
+### New name
+PUT http://localhost:5000/3.0/names/first_name
+Content-Type: application/json
+
+{
+    "name": "Иван"
+}
+
+### Confirm
+POST http://localhost:5000/3.0/legion/5eee8a832f97d41a93394ee2
+Content-Type: application/json
+
+{
+    "registered": true
+}
