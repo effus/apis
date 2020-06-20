@@ -78,12 +78,28 @@ class BillRevisionService {
     /**
      * @param {*} fromDate 
      */
-    async getRevisions(fromDate) {
+    async getBillRevisions(fromDate) {
         let searchParams = {
             bill_id: new ObjectID(this.billVo.id),
             inserted_at: { "$gt": new Date(fromDate) }
         };
-        console.debug('getRevisions', searchParams);
+        const documents = await this.getDocuments(searchParams);
+        let result = [];
+        for (let i in documents) {
+            result.push(new BillRevisionVo(documents[i]));
+        }
+        return result;
+    }
+
+    /**
+     * @param {*} bills 
+     * @param {*} fromDate 
+     */
+    async getRevisionsOfBills(bills, fromDate) {
+        let searchParams = {
+            bill_id: {$in: bills.map(id => new ObjectID(id)) },
+            inserted_at: { "$gt": new Date(fromDate) }
+        };
         const documents = await this.getDocuments(searchParams);
         let result = [];
         for (let i in documents) {

@@ -165,12 +165,28 @@ class Api201 {
     getBillRevisions(req, res) {
         new UserService().getUserVoByRequest(req)
             .then((userVo) => (new VirtualBillsService(userVo)).getBill(req.params.id))
-            .then((billVo) => (new BillRevisionService(billVo)).getRevisions(req.params.from))
+            .then((billVo) => (new BillRevisionService(billVo)).getBillRevisions(req.params.from))
             .then((revisions) => {
                 res.send({result: true, revisions});
             })
             .catch((e) => {
                 console.error('getBills fail', e);
+                sendError(res, e)
+            });
+    }
+
+    /**
+     * @param {*} req 
+     * @param {*} res 
+     */
+    getAllRevisions(req, res) {
+        new UserService().getUserVoByRequest(req)
+            .then((userVo) => (new VirtualBillsService(userVo)).getAllRevisions(req.params.from))
+            .then((revisions) => {
+                res.send({result: true, revisions});
+            })
+            .catch((e) => {
+                console.error('getAllRevisions fail', e);
                 sendError(res, e)
             });
     }
@@ -386,6 +402,7 @@ router.put('/bill', Api.createBill);
 router.delete('/bill/:id', Api.deleteBill);
 router.post('/bill/:id', Api.updateBill);
 router.get('/bill/:id/revisions/:from', Api.getBillRevisions);
+router.get('/bills/revisions/:from', Api.getAllRevisions);
 router.get('/bill/:id/revision/last', Api.getLastBillRevision);
 router.put('/bill/:id/revisions', Api.createBillRevision);
 router.delete('/bill/:id/revision', Api.deleteLastRevision);

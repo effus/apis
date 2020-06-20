@@ -116,6 +116,15 @@ class VirtualBillsService {
             {_id: new ObjectID(id)}
         );
     }
+
+    /**
+     * @param {*} fromDate 
+     */
+    async getAllRevisions(fromDate) {
+        const documents = await this.getDocuments();
+        const billIds = documents.map(item => item._id);
+        return (new BillRevisionService()).getRevisionsOfBills(billIds, fromDate);
+    }
 }
 
 

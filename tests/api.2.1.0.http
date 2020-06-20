@@ -9,6 +9,8 @@ GET http://localhost:5000/2.1.0/bills
 Content-Type: application/json
 Authorization: token 5ee267cb49957109f56c4448:1592486288878:6fb5c3ec91e80dde1334b62ed1eed972699cee03ce3767451bdc12572c66ba0b
 
+
+
 ### Группы счетов
 GET http://localhost:5000/2.1.0/bill/groups/
 Content-Type: application/json
